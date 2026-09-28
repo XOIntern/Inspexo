@@ -1,0 +1,12 @@
+// use prisma-8
+
+model User {
+  id        Uuid         @id @default(uuid(7))
+  email     VarChar(255) @unique
+  name      VarChar(255)
+  password  VarChar(255)
+  createdAt temporal.createdAt()
+  updatedAt temporal.updatedAt()
+
+  @@map("user")
+}
