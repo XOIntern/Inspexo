@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight, Building2, ShieldCheck } from "lucide-react";
 
 type LoginPageProps = {
@@ -61,8 +62,7 @@ export default function LoginPage({
           <section className="relative hidden overflow-hidden px-10 py-10 lg:flex lg:flex-col lg:justify-between lg:px-12 xl:px-16">
             <div>
               {/* Logo */}
-              <a
-                href="/"
+              <Link href="/"
                 aria-label="InspeXO home"
                 className="inline-flex items-center gap-2.5"
               >
@@ -85,7 +85,7 @@ export default function LoginPage({
                     className="object-contain object-left"
                   />
                 </div>
-              </a>
+              </Link>
 
               {/* Hero text */}
               <div className="mt-24 max-w-xl">
@@ -153,8 +153,7 @@ export default function LoginPage({
 
               {/* Mobile logo */}
               <div className="mb-8 flex justify-center lg:hidden">
-                <a
-                  href="/"
+                <Link href="/"
                   aria-label="InspeXO home"
                   className="inline-flex items-center gap-2.5"
                 >
@@ -177,7 +176,7 @@ export default function LoginPage({
                       className="object-contain object-left"
                     />
                   </div>
-                </a>
+                </Link>
               </div>
 
               {/* Login card */}

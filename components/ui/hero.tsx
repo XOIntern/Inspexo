@@ -129,146 +129,126 @@ export function SiteHeader() {
 
   return (
     <>
-    <SplashScreen show={showSplash} />
-    <header className="fixed inset-x-0 top-0 z-[9999]">
-      <div
-        className={cn(
-          "w-full border-x-0 border-t-0 border-b",
-          "transition-[background-color,border-color,box-shadow,backdrop-filter]",
-          "duration-300 ease-out",
-          isScrolled
-            ? [
-                "border-[#dfe7df]/90",
-                "bg-white/72",
-                "backdrop-blur-xl",
-                "shadow-[0_10px_35px_rgba(34,55,42,0.10)]",
-              ]
-            : [
-                "border-white/35",
-                "bg-white/30",
-                "backdrop-blur-md",
-                "shadow-[0_4px_18px_rgba(34,55,42,0.04)]",
-              ],
-        )}
-      >
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-y-3 px-4 py-3 sm:px-6 sm:py-3.5 lg:px-7">
-
-          {/* LOGO */}
-          <a
-            href="#top"
-            aria-label="InspeXO home"
-            className="group flex items-center gap-2.5"
-          >
-            <div className="relative flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11">
-              <Image
-                src="/logoXO.webp"
-                alt="InspeXO logo"
-                width={48}
-                height={48}
-                priority
-                className="h-full w-full object-contain"
-              />
-            </div>
-
-            <div className="relative h-8 w-[112px] shrink-0 sm:h-9 sm:w-[126px]">
-              <Image
-                src="/InspeXO.webp"
-                alt="InspeXO"
-                width={180}
-                height={52}
-                priority
-                className="h-full w-full object-contain object-left"
-              />
-            </div>
-          </a>
-
-          {/* DESKTOP NAVIGATION */}
-          <nav
-            aria-label="Main navigation"
-            className="hidden items-center gap-8 text-sm font-medium text-[#64716a] md:flex"
-          >
+      <SplashScreen show={showSplash} />
+      <header className="fixed inset-x-0 top-0 z-[9999]">
+        <div
+          className={cn(
+            "w-full border-x-0 border-t-0 border-b",
+            "transition-[background-color,border-color,box-shadow,backdrop-filter]",
+            "duration-300 ease-out",
+            isScrolled
+              ? [
+                  "border-[#dfe7df]/90",
+                  "bg-white/72",
+                  "backdrop-blur-xl",
+                  "shadow-[0_10px_35px_rgba(34,55,42,0.10)]",
+                ]
+              : [
+                  "border-white/35",
+                  "bg-white/30",
+                  "backdrop-blur-md",
+                  "shadow-[0_4px_18px_rgba(34,55,42,0.04)]",
+                ],
+          )}
+        >
+          <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-y-3 px-4 py-3 sm:px-6 sm:py-3.5 lg:px-7">
+            {/* LOGO */}
             <a
-              href="#about"
-              className="transition-colors hover:text-[#173d31]"
+              href="#top"
+              aria-label="InspeXO home"
+              className="group flex items-center gap-2.5"
             >
-              Our Platform
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11">
+                <Image
+                  src="/logoXO.webp"
+                  alt="InspeXO logo"
+                  width={48}
+                  height={48}
+                  priority
+                  className="h-full w-full object-contain"
+                />
+              </div>
+
+              <div className="relative h-8 w-[112px] shrink-0 sm:h-9 sm:w-[126px]">
+                <Image
+                  src="/InspeXO.webp"
+                  alt="InspeXO"
+                  width={180}
+                  height={52}
+                  priority
+                  className="h-full w-full object-contain object-left"
+                />
+              </div>
             </a>
 
-            <a
-              href="#description"
-              className="transition-colors hover:text-[#173d31]"
+            {/* DESKTOP NAVIGATION */}
+            <nav
+              aria-label="Main navigation"
+              className="hidden items-center gap-8 text-sm font-medium text-[#64716a] md:flex"
             >
-              How it works
-            </a>
+              <a
+                href="#about"
+                className="transition-colors hover:text-[#173d31]"
+              >
+                Our Platform
+              </a>
 
-            <a
-              href="#why"
-              className="transition-colors hover:text-[#173d31]"
+              <a
+                href="#description"
+                className="transition-colors hover:text-[#173d31]"
+              >
+                How it works
+              </a>
+
+              <a href="#why" className="transition-colors hover:text-[#173d31]">
+                Why InspeXO
+              </a>
+            </nav>
+
+            {/* CTA */}
+            <button
+              type="button"
+              onClick={handleGetStarted}
+              className="order-2 inline-flex h-10 items-center gap-2 rounded-full bg-[#173d31] px-3.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#245442] sm:px-5 sm:text-sm"
             >
-              Why InspeXO
-            </a>
-          </nav>
+              Get started
+              <ArrowUpRight className="size-4" />
+            </button>
 
-          {/* CTA */}
-          <button
-            type="button"
-            onClick={handleGetStarted}
-            className="order-2 inline-flex h-10 items-center gap-2 rounded-full bg-[#173d31] px-3.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#245442] sm:px-5 sm:text-sm"
-          >
-            Get started
-            <ArrowUpRight className="size-4" />
-          </button>
-
-          {/* MOBILE NAVIGATION */}
-          <nav
-            aria-label="Mobile navigation"
-            className="order-3 flex w-full basis-full items-center justify-between gap-2 border-t border-white/35 pt-3 text-xs font-medium text-[#64716a] md:hidden"
-          >
-            <a
-              href="#about"
-              className="whitespace-nowrap transition-colors hover:text-[#173d31]"
+            {/* MOBILE NAVIGATION */}
+            <nav
+              aria-label="Mobile navigation"
+              className="order-3 flex w-full basis-full items-center justify-between gap-2 border-t border-white/35 pt-3 text-xs font-medium text-[#64716a] md:hidden"
             >
-              Our Platform
-            </a>
+              <a
+                href="#about"
+                className="whitespace-nowrap transition-colors hover:text-[#173d31]"
+              >
+                Our Platform
+              </a>
 
-            <a
-              href="#description"
-              className="whitespace-nowrap transition-colors hover:text-[#173d31]"
-            >
-              How it works
-            </a>
+              <a
+                href="#description"
+                className="whitespace-nowrap transition-colors hover:text-[#173d31]"
+              >
+                How it works
+              </a>
 
-            <a
-              href="#why"
-              className="whitespace-nowrap transition-colors hover:text-[#173d31]"
-            >
-              Why InspeXO
-            </a>
-          </nav>
+              <a
+                href="#why"
+                className="whitespace-nowrap transition-colors hover:text-[#173d31]"
+              >
+                Why InspeXO
+              </a>
+            </nav>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
     </>
   );
 }
 
 export function HeroSection() {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 16);
-    };
-
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
     <main
       id="top"
@@ -737,26 +717,38 @@ export function ScrollGlobe({ sections, className }: ScrollGlobeProps) {
     setActiveSection(closestIndex);
   }, []);
 
-  useEffect(() => {
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      frameRef.current = window.requestAnimationFrame(() => {
-        updateScrollPosition();
-        ticking = false;
-      });
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+useEffect(() => {
+  let ticking = false;
+
+  const onScroll = () => {
+    if (ticking) return;
+
+    ticking = true;
+
+    frameRef.current = window.requestAnimationFrame(() => {
+      updateScrollPosition();
+      ticking = false;
+    });
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+
+  frameRef.current = window.requestAnimationFrame(() => {
     updateScrollPosition();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frameRef.current !== null)
-        window.cancelAnimationFrame(frameRef.current);
-    };
-  }, [updateScrollPosition]);
+    ticking = false;
+  });
+
+  return () => {
+    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("resize", onScroll);
+
+    if (frameRef.current !== null) {
+      window.cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+  };
+}, [updateScrollPosition]);
 
   if (sections.length === 0) return null;
 
