@@ -22,19 +22,25 @@ describe("Home integration", () => {
     vi.useRealTimers();
   });
 
-  it("navigates to /login after clicking Get started", () => {
-    render(<Home />);
+it("navigates to /login after splash and skeleton loading", () => {
+  render(<Home />);
 
-    const getStartedButton = screen.getByRole("button", {
-      name: /get started/i,
-    });
-
-    fireEvent.click(getStartedButton);
-
-    act(() => {
-      vi.advanceTimersByTime(1600);
-    });
-
-    expect(pushMock).toHaveBeenCalledWith("/login");
+  const getStartedButton = screen.getByRole("button", {
+    name: /get started/i,
   });
+
+  fireEvent.click(getStartedButton);
+
+  // Splash Screen: 1600ms
+  act(() => {
+    vi.advanceTimersByTime(1600);
+  });
+
+  // Login Skeleton: 900ms
+  act(() => {
+    vi.advanceTimersByTime(900);
+  });
+
+  expect(pushMock).toHaveBeenCalledWith("/login");
+});
 });

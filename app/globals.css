@@ -19,8 +19,32 @@
   animation: tab-enter 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background-color: #e5ece5;
+  background-image: linear-gradient(
+    90deg,
+    #e5ece5 0%,
+    #e5ece5 35%,
+    #f5f8f4 50%,
+    #e5ece5 65%,
+    #e5ece5 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-tab-enter {
+  .animate-tab-enter,
+  .skeleton-shimmer {
     animation-duration: 1ms;
   }
 }
@@ -70,6 +94,10 @@
 }
 
 :root {
+  --z-section-nav: 40;
+  --z-progress: 50;
+  --z-header: 9999;
+  --z-overlay: 10000;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
