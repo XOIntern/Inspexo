@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import SplashScreen from "@/components/SplashScreen";
+import SplashScreen from "@/components/splash-screen";
 import LoginPageSkeleton from "@/components/login-page-skeleton";
 
 export function SiteHeader() {
