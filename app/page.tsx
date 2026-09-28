@@ -5,7 +5,6 @@ export default function Home() {
     <>
       <SiteHeader />
       <HeroSection />
-      <HeroSection />
       <GlobeScrollDemo />
     </>
   );
