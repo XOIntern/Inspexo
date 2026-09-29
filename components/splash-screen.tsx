@@ -40,6 +40,7 @@ export default function SplashScreen({ show }: SplashScreenProps) {
             src="/logoXO.webp"
             alt="InspeXO"
             fill
+            sizes="(max-width: 640px) 112px, 144px"
             priority
             className="object-contain"
           />

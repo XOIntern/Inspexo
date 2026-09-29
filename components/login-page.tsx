@@ -60,6 +60,7 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                     src="/logoXO.webp"
                     alt=""
                     fill
+                    sizes="44px"
                     priority
                     className="object-contain"
                   />
@@ -70,6 +71,7 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                     src="/InspeXO.webp"
                     alt="InspeXO"
                     fill
+                    sizes="126px"
                     priority
                     className="object-contain object-left"
                   />
@@ -151,6 +153,7 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                       src="/logoXO.webp"
                       alt=""
                       fill
+                      sizes="40px"
                       priority
                       className="object-contain"
                     />
@@ -161,6 +164,7 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                       src="/InspeXO.webp"
                       alt="InspeXO"
                       fill
+                      sizes="112px"
                       priority
                       className="object-contain object-left"
                     />

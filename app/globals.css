@@ -176,4 +176,28 @@
   html {
     @apply font-sans;
   }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@utility container {
+  padding-inline: 1rem;
+  margin-inline: auto;
+
+  @variant sm {
+    padding-inline: 2rem;
+  }
+
+  @variant lg {
+    padding-inline: 4rem;
+  }
+
+  @variant xl {
+    padding-inline: 5rem;
+  }
+
+  @variant 2xl {
+    padding-inline: 6rem;
+  }
 }
