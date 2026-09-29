@@ -1,6 +1,6 @@
-﻿import ScrollGlobe from "@/components/scroll-globe";
-import { HeroSection } from "@/components/hero";
-import { Header } from "@/components/header";
+﻿import ScrollGlobe from "@/components/home/scroll-globe";
+import { HeroSection } from "@/components/home/hero";
+import { Header } from "@/components/home/header";
 
 export default function Home() {
   return (

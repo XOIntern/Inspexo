@@ -75,13 +75,13 @@ export default function ScrollGlobeClient({
   if (sections.length === 0) return null;
 
   return (
-    <div className="relative isolate w-full overflow-x-clip bg-[#f7f8f5] text-[#19231f]">
+    <div className="relative isolate w-full overflow-x-clip bg-background text-foreground">
       <div
         aria-hidden="true"
-        className="fixed inset-x-0 top-0 z-[var(--z-progress)] h-0.5 bg-[#dce5dc]"
+        className="fixed inset-x-0 top-0 z-[var(--z-progress)] h-0.5 bg-border"
       >
         <div
-          className="h-full origin-left bg-[#4f8560] transition-transform duration-150"
+          className="h-full origin-left bg-brand transition-transform duration-150"
           style={{ transform: `scaleX(${scrollProgress})` }}
         />
       </div>
@@ -90,7 +90,7 @@ export default function ScrollGlobeClient({
         aria-label="Page sections"
         className="fixed right-5 top-1/2 z-[var(--z-section-nav)] hidden -translate-y-1/2 sm:block lg:right-8"
       >
-        <ol className="relative space-y-5 before:absolute before:bottom-1 before:left-1/2 before:top-1 before:-z-10 before:w-px before:-translate-x-1/2 before:bg-[#a9c2ad]/60">
+        <ol className="relative space-y-5 before:absolute before:bottom-1 before:left-1/2 before:top-1 before:-z-10 before:w-px before:-translate-x-1/2 before:bg-muted-foreground/60">
           {sections.map((section, index) => (
             <li
               key={section.id}
@@ -98,7 +98,7 @@ export default function ScrollGlobeClient({
             >
               <span
                 className={cn(
-                  "pointer-events-none absolute right-7 whitespace-nowrap rounded-lg border border-[#e1e8e1] bg-white/95 px-3 py-2 text-xs font-medium text-[#34463c] opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-within:opacity-100",
+                  "pointer-events-none absolute right-7 whitespace-nowrap rounded-lg border border-border bg-white/95 px-3 py-2 text-xs font-medium text-accent-foreground opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-within:opacity-100",
                   activeSection === index && "opacity-100",
                 )}
               >
@@ -115,10 +115,10 @@ export default function ScrollGlobeClient({
                   })
                 }
                 className={cn(
-                  "size-3 rounded-full border-2 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#568061] focus-visible:ring-offset-2",
+                  "size-3 rounded-full border-2 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   activeSection === index
-                    ? "scale-110 border-[#39724d] bg-[#39724d]"
-                    : "border-[#9aafa0] bg-[#f7f8f5] hover:border-[#39724d]",
+                    ? "scale-110 border-brand-strong bg-brand-strong"
+                    : "border-muted-foreground/60 bg-background hover:border-brand-strong",
                 )}
               />
             </li>

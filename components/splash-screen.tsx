@@ -9,7 +9,7 @@ interface SplashScreenProps {
 export default function SplashScreen({ show }: SplashScreenProps) {
   return (
     <div
-      className={`fixed inset-0 z-[var(--z-overlay)] flex items-center justify-center overflow-hidden bg-[#f7f8f5] transition-all duration-500 ${
+      className={`fixed inset-0 z-(--z-overlay) flex items-center justify-center overflow-hidden bg-background transition-all duration-500 ${
         show
           ? "pointer-events-auto opacity-100"
           : "pointer-events-none opacity-0"
@@ -24,12 +24,12 @@ export default function SplashScreen({ show }: SplashScreenProps) {
       {/* Secondary glow */}
       <div
         aria-hidden="true"
-        className="absolute h-72 w-72 rounded-full bg-[#4f8560]/10 blur-3xl"
+        className="absolute h-72 w-72 rounded-full bg-brand/10 blur-3xl"
       />
 
       {/* XO Logo */}
       <div
-        className={`relative z-10 transform transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`relative z-10 transform transition-all duration-1200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           show
             ? "scale-100 opacity-100 blur-0"
             : "scale-75 opacity-0 blur-md"

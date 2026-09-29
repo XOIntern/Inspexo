@@ -3,39 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Building2, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type LoginPageProps = {
   onMicrosoftLogin?: () => void;
 };
 
-// function MicrosoftLogo() {
-//   return (
-//     <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5 shrink-0">
-//       <rect x="2" y="2" width="9" height="9" fill="currentColor" />
-//       <rect
-//         x="13"
-//         y="2"
-//         width="9"
-//         height="9"
-//         fill="currentColor"
-//         opacity="0.82"
-//       />
-//       <rect
-//         x="2"
-//         y="13"
-//         width="9"
-//         height="9"
-//         fill="currentColor"
-//         opacity="0.82"
-//       />
-//       <rect x="13" y="13" width="9" height="9" fill="currentColor" />
-//     </svg>
-//   );
-// }
-
 export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
   return (
-    <main className="min-h-screen overflow-hidden bg-[#f7f8f5] text-[#19231f]">
+    <main className="min-h-screen overflow-hidden bg-background text-foreground">
       <div className="relative min-h-screen">
         {/* Background */}
         <div
@@ -80,15 +56,15 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
 
               {/* Hero text */}
               <div className="mt-24 max-w-xl">
-                <p className="text-xs font-semibold tracking-[0.18em] text-[#568061]">
+                <p className="text-xs font-semibold tracking-[0.18em] text-ring">
                   HSE MANAGEMENT SYSTEM
                 </p>
 
-                <h1 className="mt-5 max-w-[10ch] text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.065em] text-[#17231d] xl:text-6xl">
+                <h1 className="mt-5 max-w-[10ch] text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.065em] text-foreground xl:text-6xl">
                   One workspace for safer operations.
                 </h1>
 
-                <p className="mt-6 max-w-lg text-base leading-8 text-[#68746d]">
+                <p className="mt-6 max-w-lg text-base leading-8 text-muted-foreground">
                   Manage audits, checklists, inspections, findings, and
                   corrective actions in one centralized workspace.
                 </p>
@@ -119,15 +95,15 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                 return (
                   <div
                     key={item.title}
-                    className="rounded-2xl border border-[#dfe7df] bg-white/65 p-4 backdrop-blur-md"
+                    className="rounded-2xl border border-border bg-white/65 p-4 backdrop-blur-md"
                   >
-                    <Icon className="size-4 text-[#4f8560]" />
+                    <Icon className="size-4 text-brand" />
 
-                    <p className="mt-3 text-sm font-semibold text-[#2f4337]">
+                    <p className="mt-3 text-sm font-semibold text-accent-foreground">
                       {item.title}
                     </p>
 
-                    <p className="mt-1.5 text-xs leading-5 text-[#728078]">
+                    <p className="mt-1.5 text-xs leading-5 text-muted-foreground/80">
                       {item.text}
                     </p>
                   </div>
@@ -173,18 +149,18 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
               </div>
 
               {/* Login card */}
-              <div className="rounded-3xl border border-[#dfe7df] bg-white/85 shadow-[0_24px_70px_rgba(38,59,43,0.10)] backdrop-blur-xl">
+              <div className="rounded-3xl border border-border bg-white/85 shadow-[0_24px_70px_rgba(38,59,43,0.10)] backdrop-blur-xl">
                 {/* Header */}
                 <div className="space-y-2 p-6 pb-4 sm:p-8 sm:pb-5">
-                  <div className="inline-flex w-fit rounded-full border border-[#dfe9df] bg-[#f3f8f3] px-3 py-1 text-[11px] font-semibold tracking-[0.12em] text-[#568061]">
+                  <div className="inline-flex w-fit rounded-full border border-border bg-accent/60 px-3 py-1 text-[11px] font-semibold tracking-[0.12em] text-ring">
                     SECURE ACCESS
                   </div>
 
-                  <h2 className="pt-2 text-2xl font-semibold tracking-[-0.04em] text-[#17231d] sm:text-3xl">
+                  <h2 className="pt-2 text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-3xl">
                     Welcome to InspeXO
                   </h2>
 
-                  <p className="text-sm leading-6 text-[#68746d]">
+                  <p className="text-sm leading-6 text-muted-foreground">
                     Sign in with your Microsoft corporate account to access the
                     HSE Management System.
                   </p>
@@ -193,13 +169,14 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                 {/* Content */}
                 <div className="p-6 pt-2 sm:p-8 sm:pt-3">
                   {/* Microsoft Login */}
-                  <button
+                  <Button
                     type="button"
                     onClick={onMicrosoftLogin}
                     disabled={!onMicrosoftLogin}
+                    className="h-12 w-full rounded-full text-sm font-semibold"
                   >
                     Continue with Microsoft
-                  </button>
+                  </Button>
 
                   {!onMicrosoftLogin && (
                     <p className="mt-2 text-xs text-muted-foreground">
@@ -209,22 +186,22 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
 
                   {/* Divider */}
                   <div className="my-6 flex items-center gap-3">
-                    <div className="h-px flex-1 bg-[#e4e9e4]" />
+                    <div className="h-px flex-1 bg-border" />
 
-                    <span className="text-[11px] font-medium text-[#9aa49d]">
+                    <span className="text-[11px] font-medium text-muted-foreground/80">
                       CORPORATE ACCESS
                     </span>
 
-                    <div className="h-px flex-1 bg-[#e4e9e4]" />
+                    <div className="h-px flex-1 bg-border" />
                   </div>
 
                   {/* Role explanation */}
-                  <div className="rounded-2xl border border-[#e3eae3] bg-[#fbfcfa] p-4">
-                    <p className="text-sm font-semibold text-[#34463c]">
+                  <div className="rounded-2xl border border-border bg-card p-4">
+                    <p className="text-sm font-semibold text-accent-foreground">
                       Your role and site access are automatic
                     </p>
 
-                    <p className="mt-1.5 text-xs leading-5 text-[#748078]">
+                    <p className="mt-1.5 text-xs leading-5 text-muted-foreground/80">
                       After authentication, InspeXO resolves your assigned role
                       and operational site permissions. No role selection is
                       required on this screen.
@@ -236,7 +213,7 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                     {["Auditor", "Auditee", "Verificator"].map((role) => (
                       <span
                         key={role}
-                        className="rounded-full border border-[#dfe7df] bg-white px-3 py-1.5 text-[11px] font-medium text-[#617067]"
+                        className="rounded-full border border-border bg-white px-3 py-1.5 text-[11px] font-medium text-muted-foreground"
                       >
                         {role}
                       </span>
@@ -244,7 +221,7 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                   </div>
 
                   {/* Security note */}
-                  <p className="mt-6 text-center text-[11px] leading-5 text-[#98a29b]">
+                  <p className="mt-6 text-center text-[11px] leading-5 text-muted-foreground/80">
                     Access is restricted to authenticated corporate users. Your
                     permissions are evaluated according to the assigned
                     user-site-role mapping.
@@ -253,7 +230,7 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
               </div>
 
               {/* Footer */}
-              <p className="mt-5 text-center text-[11px] text-[#97a19a]">
+              <p className="mt-5 text-center text-[11px] text-muted-foreground/80">
                 © {new Date().getFullYear()} InspeXO · HSE Management System
               </p>
             </div>

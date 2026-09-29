@@ -22,11 +22,11 @@ describe("Home integration", () => {
     vi.useRealTimers();
   });
 
-it("navigates to /login after splash and skeleton loading", () => {
+it("navigates to /auth/login after splash and skeleton loading", () => {
   render(<Home />);
 
   const getStartedButton = screen.getByRole("button", {
-    name: /get started/i,
+    name: /sign in/i,
   });
 
   fireEvent.click(getStartedButton);
@@ -41,6 +41,6 @@ it("navigates to /login after splash and skeleton loading", () => {
     vi.advanceTimersByTime(900);
   });
 
-  expect(pushMock).toHaveBeenCalledWith("/login");
+  expect(pushMock).toHaveBeenCalledWith("/auth/login");
 });
 });

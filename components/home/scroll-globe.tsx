@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import ScrollGlobeClient from "@/components/scroll-globe-client";
+import ScrollGlobeClient from "@/components/home/scroll-globe-client";
 
 interface ScrollSection {
   id: string;
@@ -69,19 +69,19 @@ function ScrollSection({ section }: { section: ScrollSection }) {
       <div
         className={`w-full max-w-2xl ${section.align === "center" ? "mx-auto" : section.align === "right" ? "ml-auto" : ""}`}
       >
-        <p className="text-xs font-semibold tracking-[0.18em] text-[#568061]">
+        <p className="text-xs font-semibold tracking-[0.18em] text-ring">
           {section.badge}
         </p>
         <h2
           id={`${section.id}-title`}
-          className="mt-4 text-balance text-4xl font-semibold leading-[1.04] tracking-[-0.065em] text-[#17231d] sm:text-5xl lg:text-6xl"
+          className="mt-4 text-balance text-4xl font-semibold leading-[1.04] tracking-[-0.065em] text-foreground sm:text-5xl lg:text-6xl"
         >
           {section.title}
           {section.subtitle && (
-            <span className="mt-2 block text-[#4f8560]">{section.subtitle}</span>
+            <span className="mt-2 block text-brand">{section.subtitle}</span>
           )}
         </h2>
-        <p className="mt-5 max-w-xl text-pretty text-base leading-7 text-[#68746d] sm:text-lg sm:leading-8">
+        <p className="mt-5 max-w-xl text-pretty text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
           {section.description}
         </p>
         {section.features && (
@@ -89,10 +89,10 @@ function ScrollSection({ section }: { section: ScrollSection }) {
             {section.features.map((feature) => (
               <article
                 key={feature.title}
-                className="rounded-2xl border border-[#e1e8e1] bg-white/85 p-4 text-left shadow-sm backdrop-blur-sm sm:p-5"
+                className="rounded-2xl border border-border bg-white/85 p-4 text-left shadow-sm backdrop-blur-sm sm:p-5"
               >
-                <h3 className="font-semibold text-[#2d4937]">{feature.title}</h3>
-                <p className="mt-1.5 text-sm leading-6 text-[#68746d]">
+                <h3 className="font-semibold text-accent-foreground">{feature.title}</h3>
+                <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
                   {feature.description}
                 </p>
               </article>
