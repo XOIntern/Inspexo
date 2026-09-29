@@ -1,0 +1,17 @@
+services:
+  postgres:
+    container_name: inspexo-postgres
+    image: postgres:18.3
+    restart: unless-stopped
+    ports:
+      - "$DB_PORT:5432"
+    environment:
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_DB=$DB_NAME
+      - PGDATA=/var/lib/postgresql/18/docker
+    volumes:
+     - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
