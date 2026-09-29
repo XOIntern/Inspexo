@@ -1,4 +1,4 @@
-"use client";
+﻿
 
 import Image from "next/image";
 
@@ -9,7 +9,7 @@ interface SplashScreenProps {
 export default function SplashScreen({ show }: SplashScreenProps) {
   return (
     <div
-      className={`fixed inset-0 z-[10000] flex items-center justify-center overflow-hidden bg-[#f7f8f5] transition-all duration-500 ${
+      className={`fixed inset-0 z-[var(--z-overlay)] flex items-center justify-center overflow-hidden bg-[#f7f8f5] transition-all duration-500 ${
         show
           ? "pointer-events-auto opacity-100"
           : "pointer-events-none opacity-0"

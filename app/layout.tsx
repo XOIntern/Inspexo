@@ -17,15 +17,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "InspeXo",
-    template: "%s | InspeXo",
+    default: "InspeXO",
+    template: "%s | InspeXO",
   },
   description:
     "HSE Management System for audits, inspections, findings, and corrective actions.",
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/logo-inspexo.svg",
-    apple: "/logo-inspexo.svg",
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/favicon.png",
   },
 };
 
