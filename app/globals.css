@@ -30,7 +30,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -71,6 +71,8 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --spacing-marketing: 5.5rem;
+  --spacing-marketing-lg: 8rem;
 }
 
 :root {
@@ -118,37 +120,43 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Brand-consistent dark: green-tinted neutrals, primary keeps on-brand
+     green so full-bleed bands stay in-theme (see DESIGN.md rules). */
+  --background: #0f1512;
+  --foreground: #e9efe9;
+  --card: #17211b;
+  --card-foreground: #e9efe9;
+  --popover: #17211b;
+  --popover-foreground: #e9efe9;
+  --primary: #2c5743;
+  --primary-foreground: #f2f7f3;
+  --secondary: #1d2922;
+  --secondary-foreground: #dfe7e0;
+  --muted: #1d2922;
+  --muted-foreground: #a3b0a8;
+  --accent: #22322a;
+  --accent-foreground: #cfe0d3;
+  --brand: #6fa180;
+  --brand-strong: #8fbf9d;
+  --success: #7fbf8c;
+  --warning: #c9a562;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: #79a887;
+  --chart-1: #6fa180;
+  --chart-2: #58866a;
+  --chart-3: #466c55;
+  --chart-4: #334e40;
+  --chart-5: #22322a;
+  --sidebar: #17211b;
+  --sidebar-foreground: #e9efe9;
+  --sidebar-primary: #2c5743;
+  --sidebar-primary-foreground: #f2f7f3;
+  --sidebar-accent: #22322a;
+  --sidebar-accent-foreground: #cfe0d3;
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: #79a887;
 }
 
 @layer base {
@@ -184,5 +192,99 @@
 
   @variant 2xl {
     padding-inline: 6rem;
+  }
+}
+
+/* Hero constellation: multi-axis organic drift, entrance pop, edge flow.
+   Node drift lives on the wrapper, pointer parallax writes `translate`
+   directly (no keyframe conflict); pop entrance lives on an inner wrapper
+   so the two animations don't compete. All disabled for reduced motion. */
+@keyframes hero-drift {
+  0% {
+    transform: translate(-8px, -10px) rotate(-4deg);
+  }
+  33% {
+    transform: translate(10px, -4px) rotate(3deg);
+  }
+  66% {
+    transform: translate(-4px, 10px) rotate(-2deg);
+  }
+  100% {
+    transform: translate(-8px, -10px) rotate(-4deg);
+  }
+}
+
+.hero-drift {
+  animation: hero-drift 7s ease-in-out infinite;
+}
+
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    scale: 0.3;
+  }
+  60% {
+    opacity: 1;
+    scale: 1.18;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+.hero-pop {
+  animation: hero-pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes hero-flow {
+  to {
+    stroke-dashoffset: -1.1;
+  }
+}
+
+.edge-flow line {
+  animation: hero-flow 3.2s linear infinite;
+}
+
+@keyframes hero-float {
+  from {
+    transform: translateY(-14px);
+  }
+  to {
+    transform: translateY(14px);
+  }
+}
+
+.hero-float-slow {
+  animation: hero-float 11s ease-in-out infinite alternate;
+}
+
+/* Scroll reveal: driven by the Reveal component (IntersectionObserver). */
+.reveal {
+  opacity: 0;
+  transform: translateY(1.25rem);
+  transition:
+    opacity 600ms ease,
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-drift,
+  .hero-pop,
+  .edge-flow line,
+  .hero-float-slow {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

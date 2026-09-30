@@ -4,8 +4,13 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
-import { cn } from "@/lib/utils";
 import SplashScreen from "@/components/splash-screen";
+
+const navLinks = [
+  { href: "#features", label: "Platform" },
+  { href: "#how-it-works", label: "How it works" },
+  { href: "#use-cases", label: "Industries" },
+];
 
 export function Header() {
   const [showSplash, setShowSplash] = useState(false);
@@ -41,96 +46,65 @@ export function Header() {
     <>
       <SplashScreen show={showSplash} />
       <header className="fixed inset-x-0 top-0 z-(--z-header)">
-        <div
-          className={cn(
-            "w-full border-x-0 border-t-0 border-b",
-            "transition-[background-color,border-color,box-shadow,backdrop-filter]",
-            "duration-300 ease-out",
-            "border-border/90",
-            "bg-white/72",
-            "backdrop-blur-xl",
-            "shadow-[0_10px_35px_rgba(34,55,42,0.10)]",
-          )}
-        >
+        <div className="w-full border-b border-border bg-card/70 shadow-[0_10px_35px_rgba(34,55,42,0.06)] backdrop-blur-xl">
           <div className="container flex w-full flex-wrap items-center justify-between gap-y-3 py-3 sm:py-3.5">
-            {/* LOGO */}
+            {/* Logo */}
             <a
               href="#top"
               aria-label="InspeXO home"
-              className="group flex items-center gap-2.5"
+              className="flex items-center gap-2.5"
             >
-              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11">
-                <Image
-                  src="/logoXO.webp"
-                  alt="InspeXO logo"
-                  width={48}
-                  height={48}
-                  priority
-                  className="h-full w-full object-contain"
-                />
-              </div>
+              <Image
+                src="/logoXO.webp"
+                alt="InspeXO logo"
+                width={44}
+                height={44}
+                priority
+                className="w-10 sm:h-11 sm:w-11"
+              />
             </a>
 
-            {/* DESKTOP NAVIGATION */}
+            {/* Desktop navigation */}
             <nav
               aria-label="Main navigation"
               className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex"
             >
-              <a
-                href="#about"
-                className="transition-colors hover:text-primary"
-              >
-                Our Platform
-              </a>
-
-              <a
-                href="#description"
-                className="transition-colors hover:text-primary"
-              >
-                How it works
-              </a>
-
-              <a href="#why" className="transition-colors hover:text-primary">
-                Why InspeXO
-              </a>
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="transition-colors hover:text-primary"
+                >
+                  {link.label}
+                </a>
+              ))}
             </nav>
 
-            {/* CTA */}
+            {/* Sign in: splash flow kept for the integration test */}
             <button
               type="button"
               onClick={handleGetStarted}
               disabled={isTransitioning}
-              className="order-2 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-3.5 text-xs font-semibold text-white shadow-sm transition hover:bg-primary/90 disabled:cursor-wait disabled:opacity-70 sm:px-5 sm:text-sm"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-wait disabled:opacity-70 sm:px-5 sm:text-sm"
             >
               Sign in
-              <ArrowUpRight className="size-4" />
+              <ArrowUpRight className="size-4" strokeWidth={2} />
             </button>
 
-            {/* MOBILE NAVIGATION */}
+            {/* Mobile navigation */}
             <nav
               aria-label="Mobile navigation"
-              className="order-3 flex w-full basis-full items-center justify-between gap-2 border-t border-white/35 pt-3 text-xs font-medium text-muted-foreground md:hidden"
+              className="order-3 flex w-full basis-full items-center justify-between gap-2 border-t border-border px-1 pt-3 pb-1 text-xs font-medium text-muted-foreground md:hidden"
             >
-              <a
-                href="#about"
-                className="whitespace-nowrap transition-colors hover:text-primary"
-              >
-                Our Platform
-              </a>
-
-              <a
-                href="#description"
-                className="whitespace-nowrap transition-colors hover:text-primary"
-              >
-                How it works
-              </a>
-
-              <a
-                href="#why"
-                className="whitespace-nowrap transition-colors hover:text-primary"
-              >
-                Why InspeXO
-              </a>
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="whitespace-nowrap transition-colors hover:text-primary"
+                >
+                  {link.label}
+                </a>
+              ))}
             </nav>
           </div>
         </div>
@@ -138,4 +112,3 @@ export function Header() {
     </>
   );
 }
-
