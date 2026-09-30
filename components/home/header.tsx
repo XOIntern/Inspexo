@@ -58,9 +58,9 @@ export function Header() {
                 src="/logoXO.webp"
                 alt="InspeXO logo"
                 width={44}
-                height={44}
+                height={20}
                 priority
-                className="w-10 sm:h-11 sm:w-11"
+                className="w-10 sm:w-11"
               />
             </a>
 
