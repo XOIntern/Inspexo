@@ -24,9 +24,10 @@ export function BenefitsSection() {
             {stats.map((stat, i) => (
               <Reveal key={stat.value} delay={i * 70}>
                 <div className="flex flex-col">
-                  <dd className="font-heading order-1 text-4xl font-semibold tracking-tight sm:text-5xl">
+                  <dd className="font-heading order-1 min-h-0 text-4xl font-semibold tracking-tight sm:text-5xl lg:min-h-[96px]">
                     {stat.value}
                   </dd>
+
                   <dt className="order-2 mt-2 text-sm leading-6 opacity-80">
                     {stat.label}
                   </dt>

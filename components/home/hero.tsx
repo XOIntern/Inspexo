@@ -1,5 +1,4 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
-
+import { ArrowRight } from "lucide-react";
 import { HeroConstellation } from "@/components/home/hero-constellation";
 
 export function HeroSection() {
@@ -32,14 +31,6 @@ export function HeroSection() {
           >
             Book a demo
             <ArrowRight className="size-4" strokeWidth={2} />
-          </a>
-
-          <a
-            href="/auth/login"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border bg-card/70 px-6 text-sm font-semibold text-foreground transition hover:border-muted-foreground/50 hover:bg-card"
-          >
-            Sign in
-            <ArrowUpRight className="size-4" strokeWidth={2} />
           </a>
         </div>
       </div>
