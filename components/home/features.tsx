@@ -12,7 +12,7 @@ const features = [
   {
     icon: ClipboardCheck,
     title: "Inspections & checklists",
-    body: "Standard templates, offline-capable field runs, consistent scoring at every site.",
+    body: "Standard templates, inspections from any device, consistent scoring at every site.",
   },
   {
     icon: FileCheck,
@@ -32,12 +32,12 @@ const features = [
   {
     icon: Smartphone,
     title: "Mobile inspections",
-    body: "Full checklists, photos, and signatures on the phone. No laptop, no re-typing back at the desk.",
+    body: "Full checklists, photos, and signatures from the phone's browser. On the factory floor or in the field, nothing to install.",
   },
   {
     icon: Blocks,
     title: "Integrations",
-    body: "Connects with the tools operations already uses, so findings reach the right team's queue.",
+    body: "Findings and corrective actions go to the team that owns the fix, with export when other systems need the data.",
   },
 ];
 

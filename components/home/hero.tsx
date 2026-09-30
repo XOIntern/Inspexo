@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { HeroConstellation } from "@/components/home/hero-constellation";
 
@@ -27,19 +27,19 @@ export function HeroSection() {
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <a
-            href="mailto:hello@inspexo.com?subject=Demo%20request"
+            href="#how-it-works"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-[0_8px_20px_rgba(23,61,49,0.16)] transition hover:-translate-y-0.5 hover:bg-primary/90"
           >
-            Book a demo
+            See how it works
             <ArrowRight className="size-4" strokeWidth={2} />
           </a>
 
           <a
-            href="/auth/login"
+            href="#features"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border bg-card/70 px-6 text-sm font-semibold text-foreground transition hover:border-muted-foreground/50 hover:bg-card"
           >
-            Sign in
-            <ArrowUpRight className="size-4" strokeWidth={2} />
+            Explore features
+            <ArrowRight className="size-4" strokeWidth={2} />
           </a>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { Reveal } from "@/components/home/reveal";
    they are never mistaken for measured customer averages. */
 const stats = [
   { value: "-70%", label: "time spent preparing for audits" },
-  { value: "Days, not months", label: "to verified close-out of findings" },
+  { value: "10x", label: "faster verified close-out of findings" },
   { value: "100%", label: "of findings carry an owner and a due date" },
   { value: "One", label: "system of record across every site" },
 ];
@@ -23,11 +23,11 @@ export function BenefitsSection() {
           <dl className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
             {stats.map((stat, i) => (
               <Reveal key={stat.value} delay={i * 70}>
-                <div className="flex flex-col">
+                <div className="flex h-full flex-col">
                   <dd className="font-heading order-1 text-4xl font-semibold tracking-tight sm:text-5xl">
                     {stat.value}
                   </dd>
-                  <dt className="order-2 mt-2 text-sm leading-6 opacity-80">
+                  <dt className="order-2 mt-auto pt-2 text-sm leading-6 opacity-80">
                     {stat.label}
                   </dt>
                 </div>

@@ -15,13 +15,11 @@ const columns = [
     links: [
       { label: "Why InspeXO", href: "#benefits" },
       { label: "FAQ", href: "#faq" },
-      { label: "Book a demo", href: "mailto:hello@inspexo.com?subject=Demo%20request" },
     ],
   },
   {
     heading: "Resources",
     links: [
-      { label: "Sign in", href: "/auth/login" },
       { label: "Inspection templates", href: "#how-it-works" },
       { label: "Contact", href: "mailto:hello@inspexo.com?subject=Question" },
     ],
