@@ -5,7 +5,6 @@ import { SolutionSection } from "@/components/home/solution";
 import { FeaturesSection } from "@/components/home/features";
 import { HowItWorksSection } from "@/components/home/how-it-works";
 import { BenefitsSection } from "@/components/home/benefits";
-import { UseCasesSection } from "@/components/home/use-cases";
 import { FaqCtaSection } from "@/components/home/faq-cta";
 import { Footer } from "@/components/home/footer";
 
@@ -20,7 +19,6 @@ export default function Home() {
         <FeaturesSection />
         <HowItWorksSection />
         <BenefitsSection />
-        <UseCasesSection />
         <FaqCtaSection />
       </main>
       <Footer />

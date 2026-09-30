@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const columns = [
   {
     heading: "Product",
@@ -6,15 +8,6 @@ const columns = [
       { label: "How it works", href: "#how-it-works" },
       { label: "Mobile inspections", href: "#features" },
       { label: "Integrations", href: "#features" },
-    ],
-  },
-  {
-    heading: "Solutions",
-    links: [
-      { label: "Manufacturing", href: "#use-cases" },
-      { label: "Oil & Gas", href: "#use-cases" },
-      { label: "Construction", href: "#use-cases" },
-      { label: "Energy & Utilities", href: "#use-cases" },
     ],
   },
   {
@@ -47,9 +40,13 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-12">
           {/* Brand block */}
           <div className="lg:col-span-4">
-            <p className="font-heading text-2xl font-semibold tracking-tight">
-              Inspe<span className="opacity-70">XO</span>
-            </p>
+            <Image
+              src="/logoXO.webp"
+              alt="InspeXO logo"
+              width={88}
+              height={47}
+              className="h-auto w-16"
+            />
             <p className="mt-3 max-w-xs text-sm leading-6 opacity-80">
               The HSE system of record for inspections, findings, and
               corrective actions.

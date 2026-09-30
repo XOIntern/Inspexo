@@ -9,7 +9,6 @@ import SplashScreen from "@/components/splash-screen";
 const navLinks = [
   { href: "#features", label: "Platform" },
   { href: "#how-it-works", label: "How it works" },
-  { href: "#use-cases", label: "Industries" },
 ];
 
 export function Header() {
@@ -57,10 +56,10 @@ export function Header() {
               <Image
                 src="/logoXO.webp"
                 alt="InspeXO logo"
-                width={44}
-                height={20}
+                width={88}
+                height={47}
                 priority
-                className="w-10 sm:w-11"
+                className="h-auto w-10 sm:w-11"
               />
             </a>
 

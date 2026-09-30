@@ -121,7 +121,7 @@ export function HeroConstellation() {
     <div
       ref={ref}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 hidden will-change-transform md:block"
+      className="pointer-events-none absolute inset-0 opacity-40 will-change-transform md:opacity-100"
     >
       {/* Soft color blobs for depth. */}
       <div className="hero-float-slow absolute left-[10%] top-[30%] size-72 rounded-full bg-emerald-300/25 blur-3xl" />
