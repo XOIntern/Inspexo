@@ -4,11 +4,11 @@ import { Reveal } from "@/components/home/reveal";
 const faqs = [
   {
     q: "How long does implementation take?",
-    a: "Most teams start running their first inspections in the first week: upload your existing checklists, add sites, invite users. Full rollout across sites and reporting is typically a one to two month structured onboarding.",
+    a: "Most teams start running their first inspections in the first week: upload your existing checklists, invite your users. Full rollout and reporting is typically a one to two month structured onboarding.",
   },
   {
-    q: "Does it work offline and on mobile?",
-    a: "Yes. Inspections run on iOS and Android, store photos and signatures on device, and queue offline. Everything syncs to the audit trail once the device reconnects.",
+    q: "Does it work on mobile?",
+    a: "Yes. InspeXO runs in the browser on any phone, tablet, or laptop your team already uses, nothing to install. Inspections capture photos and signatures on the spot, and every record syncs to the audit trail.",
   },
   {
     q: "Can we migrate our existing checklists?",
@@ -19,8 +19,8 @@ const faqs = [
     a: "Findings and corrective actions can flow into the queues your teams already work from. Connectors and an API cover common maintenance, permit, and collaboration tools.",
   },
   {
-    q: "How is pricing structured?",
-    a: "Pricing is per site and per user role, based on scope. Book a demo for a quote that matches your sites, shift patterns, and reporting needs.",
+    q: "What does InspeXO cost?",
+    a: "We don't publish a price list. Tell us how many inspectors you run and what your reporting has to cover, and we'll quote your setup directly.",
   },
   {
     q: "Who owns the inspection data?",
@@ -79,10 +79,10 @@ export function FaqCtaSection() {
             </p>
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <a
-                href="mailto:hello@inspexo.com?subject=Demo%20request"
+                href="/auth/login"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary-foreground px-6 text-sm font-semibold text-primary shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:opacity-90"
               >
-                Book a demo
+                Get started
                 <ArrowRight className="size-4" strokeWidth={2} />
               </a>
             </div>
