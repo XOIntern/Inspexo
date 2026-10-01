@@ -1,9 +1,11 @@
 // Integration tests for the contact endpoint, dashboard Server Actions,
 // and the audit trail against live Postgres.
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createHash } from "node:crypto";
 import type { Varchar } from "@prisma/orm-postgres/target/codec-types";
 
 import { db } from "@/src/prisma/db";
+import { cleanupThrottleKeys } from "./test-cleanup";
 import { hashPassword } from "@/src/lib/auth/password";
 import { SESSION_COOKIE_NAME, createSession } from "@/src/lib/auth/session";
 import { updateUserContact } from "@/src/lib/auth/admin";
@@ -89,6 +91,9 @@ afterEach(async () => {
       }
     }
   }
+  await cleanupThrottleKeys([
+    `verify-ip:${createHash("sha256").update("direct").digest("hex")}`,
+  ]);
 });
 
 describe("updateUserContact", () => {

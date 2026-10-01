@@ -64,7 +64,17 @@ export async function recordThrottleFailure(
     if (row !== null) {
       await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).delete();
     }
-    await db.orm.public.AuthThrottle.create({ key: varchar<128>(key), windowStartedAt: now, attempts: 1 });
+    try {
+      await db.orm.public.AuthThrottle.create({ key: varchar<128>(key), windowStartedAt: now, attempts: 1 });
+    } catch (error) {
+      // Lost a create race with a concurrent caller on the same key: fall
+      // back to incrementing the row that won, instead of 500ing.
+      const current = await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).first();
+      if (current === null) throw error;
+      await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).update({
+        attempts: current.attempts + 1,
+      });
+    }
     return;
   }
   await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).update({

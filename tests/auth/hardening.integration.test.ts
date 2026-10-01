@@ -183,6 +183,7 @@ describe("L-7 session cap", () => {
 describe("audit coverage", () => {
   it("records role, status, and credential operations", async () => {
     const adminId = await makeAdmin();
+    trackThrottleKey(`bulk-credentials:${adminId}`);
     const siteId = await makeSite("AU-2");
     const { user } = await provisionUser(adminId, {
       name: "Audit Me",
