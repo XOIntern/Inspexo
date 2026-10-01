@@ -1,15 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Building2, ShieldCheck } from "lucide-react";
+
+import {
+  ArrowRight,
+  Building2,
+  ShieldCheck,
+  EyeIcon,
+  EyeOffIcon,
+  LockKeyholeIcon,
+  MailIcon,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 
-type LoginPageProps = {
-  onMicrosoftLogin?: () => void;
-};
+import { Field, FieldLabel } from "@/components/ui/field";
 
-export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
       <div className="relative min-h-screen">
@@ -134,17 +153,6 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
                       className="object-contain"
                     />
                   </div>
-
-                  <div className="relative h-8 w-[112px]">
-                    <Image
-                      src="/InspeXO.webp"
-                      alt="InspeXO"
-                      fill
-                      sizes="112px"
-                      priority
-                      className="object-contain object-left"
-                    />
-                  </div>
                 </Link>
               </div>
 
@@ -152,37 +160,103 @@ export default function LoginPage({ onMicrosoftLogin }: LoginPageProps) {
               <div className="rounded-3xl border border-border bg-white/85 shadow-[0_24px_70px_rgba(38,59,43,0.10)] backdrop-blur-xl">
                 {/* Header */}
                 <div className="space-y-2 p-6 pb-4 sm:p-8 sm:pb-5">
-                  <div className="inline-flex w-fit rounded-full border border-border bg-accent/60 px-3 py-1 text-[11px] font-semibold tracking-[0.12em] text-ring">
-                    SECURE ACCESS
-                  </div>
-
                   <h2 className="pt-2 text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-3xl">
                     Welcome to InspeXO
                   </h2>
 
                   <p className="text-sm leading-6 text-muted-foreground">
-                    Sign in with your Microsoft corporate account to access the
-                    HSE Management System.
+                    Sign in with your corporate account to access the HSE
+                    Management System.
                   </p>
                 </div>
 
                 {/* Content */}
                 <div className="p-6 pt-2 sm:p-8 sm:pt-3">
-                  {/* Microsoft Login */}
+                  {/* Email */}
+                  <Field className="w-full">
+                    <FieldLabel htmlFor="email">Email</FieldLabel>
+
+                    <InputGroup className="w-full overflow-hidden">
+                      <InputGroupAddon>
+                        <MailIcon className="size-4" />
+                      </InputGroupAddon>
+
+                      <InputGroupInput
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="Your Email In Here"
+                        autoComplete="off"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        className="min-w-0 flex-1 truncate
+                        bg-white
+                        [&:-webkit-autofill]:bg-white
+                        [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_white]
+                        [&:-webkit-autofill]:[-webkit-text-fill-color:inherit]"
+                      />
+                    </InputGroup>
+                  </Field>
+
+                  {/* Password */}
+                  <Field className="mt-5 w-full">
+                    <FieldLabel htmlFor="password">Password</FieldLabel>
+
+                    <InputGroup className="w-full overflow-hidden">
+                      <InputGroupAddon>
+                        <LockKeyholeIcon className="size-4" />
+                      </InputGroupAddon>
+
+                      <InputGroupInput
+                        id="password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Your Password In Here"
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        className="                        bg-white
+                        [&:-webkit-autofill]:bg-white
+                        [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_white]
+                        [&:-webkit-autofill]:[-webkit-text-fill-color:inherit]"
+                      />
+
+                      <InputGroupAddon align="inline-end">
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                          className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          {showPassword ? (
+                            <EyeIcon className="size-4" />
+                          ) : (
+                            <EyeOffIcon className="size-4" />
+                          )}
+                        </button>
+                      </InputGroupAddon>
+                    </InputGroup>
+                  </Field>
+
+                  {/* Forgot Password */}
+                  <div className="mt-3">
+                    <Link
+                      href="/auth/forgot-password"
+                      className="text-xs font-semibold tracking-wide text-ring hover:underline"
+                    >
+                      FORGOT PASSWORD
+                    </Link>
+                  </div>
+
+                  {/* Sign In */}
                   <Button
                     type="button"
-                    onClick={onMicrosoftLogin}
-                    disabled={!onMicrosoftLogin}
-                    className="h-12 w-full rounded-full text-sm font-semibold"
+                    className="mt-6 h-12 w-full rounded-full text-sm font-semibold"
                   >
-                    Continue with Microsoft
+                    SIGN IN -&gt;
                   </Button>
-
-                  {!onMicrosoftLogin && (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Microsoft Entra ID login is not configured yet.
-                    </p>
-                  )}
 
                   {/* Divider */}
                   <div className="my-6 flex items-center gap-3">
