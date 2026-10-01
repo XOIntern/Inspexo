@@ -28,6 +28,31 @@ export class ProvisionError extends Error {
   }
 }
 
+export const VERIFICATION_ERROR_CODES = [
+  "INVALID_TOKEN", // unknown, expired, or already-used token — 400 generic
+  "RATE_LIMITED", // resend window exhausted — 429
+] as const;
+
+export type VerificationErrorCode = (typeof VERIFICATION_ERROR_CODES)[number];
+
+const VERIFICATION_ERROR_STATUS = {
+  INVALID_TOKEN: 400,
+  RATE_LIMITED: 429,
+} as const;
+
+/** Email-verification failure. Messages are safe to send to clients. */
+export class VerificationError extends Error {
+  readonly code: VerificationErrorCode;
+  readonly status: 400 | 429;
+
+  constructor(code: VerificationErrorCode, message: string) {
+    super(message);
+    this.name = "VerificationError";
+    this.code = code;
+    this.status = VERIFICATION_ERROR_STATUS[code];
+  }
+}
+
 export const AUTH_ERROR_CODES = [
   "INVALID_CREDENTIALS", // unknown email, wrong password, inactive, null hash — 401 generic
   "SESSION_INVALID", // undecryptable, expired, missing/revoked row — 401 generic

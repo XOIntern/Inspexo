@@ -46,6 +46,8 @@ Cardinality is enforced at provisioning time (`provisionUser`).
 | `POST /api/auth/logout` | revoke the session everywhere, clear the cookie |
 | `GET /api/auth/me` | canonical current user (safe shape only) |
 | `GET /api/auth/session` | legacy alias of `/me`, identical by construction |
+| `POST /api/auth/verify-email` | redeem a verification token, no session needed |
+| `POST /api/auth/resend-verification` | reissue + resend the caller's own link (throttled) |
 
 The safe shape is `id, name, email, role, status, department, siteIds,
 emailVerified, mustChangePassword`. `passwordHash`, tokens, and verification

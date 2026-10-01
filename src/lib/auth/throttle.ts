@@ -21,29 +21,46 @@ export function throttleKey(email: string): string {
   return createHash("sha256").update(email).digest("hex");
 }
 
-function windowExpired(windowStartedAt: Temporal.Instant, now: Temporal.Instant): boolean {
-  return now.epochMilliseconds - windowStartedAt.epochMilliseconds >= THROTTLE_WINDOW_MS;
+export type ThrottlePolicy = {
+  windowMs: number;
+  maxAttempts: number;
+};
+
+const DEFAULT_POLICY: ThrottlePolicy = {
+  windowMs: THROTTLE_WINDOW_MS,
+  maxAttempts: THROTTLE_MAX_ATTEMPTS,
+};
+
+function windowExpired(
+  windowStartedAt: Temporal.Instant,
+  now: Temporal.Instant,
+  windowMs: number,
+): boolean {
+  return now.epochMilliseconds - windowStartedAt.epochMilliseconds >= windowMs;
 }
 
 /** Throws RATE_LIMITED when the key exhausted its window. */
-export async function checkThrottle(key: string): Promise<void> {
+export async function checkThrottle(key: string, policy: ThrottlePolicy = DEFAULT_POLICY): Promise<void> {
   const row = await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).first();
   if (row === null) return;
   const now = Temporal.Now.instant();
-  if (windowExpired(row.windowStartedAt, now)) {
+  if (windowExpired(row.windowStartedAt, now, policy.windowMs)) {
     await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).delete();
     return;
   }
-  if (row.attempts >= THROTTLE_MAX_ATTEMPTS) {
+  if (row.attempts >= policy.maxAttempts) {
     throw new AuthError("RATE_LIMITED", "Too many attempts. Try again later.");
   }
 }
 
 /** Records one failed attempt; resets the window when it expired. */
-export async function recordThrottleFailure(key: string): Promise<void> {
+export async function recordThrottleFailure(
+  key: string,
+  policy: ThrottlePolicy = DEFAULT_POLICY,
+): Promise<void> {
   const now = Temporal.Now.instant();
   const row = await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).first();
-  if (row === null || windowExpired(row.windowStartedAt, now)) {
+  if (row === null || windowExpired(row.windowStartedAt, now, policy.windowMs)) {
     if (row !== null) {
       await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).delete();
     }
