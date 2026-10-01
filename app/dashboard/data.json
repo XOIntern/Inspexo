@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "title": "LOTO lock missing at conveyor line 4",
+    "site": "Plant 1",
+    "severity": "Critical",
+    "status": "Open",
+    "owner": "Rudi Hartono",
+    "dueDate": "2026-09-28"
+  },
+  {
+    "id": 2,
+    "title": "Fire extinguisher ABC 6kg expired",
+    "site": "Plant 2",
+    "severity": "Critical",
+    "status": "In Progress",
+    "owner": "Sari Wulandari",
+    "dueDate": "2026-10-02"
+  },
+  {
+    "id": 3,
+    "title": "Emergency exit blocked by pallets",
+    "site": "Plant 3",
+    "severity": "Critical",
+    "status": "In Progress",
+    "owner": "Andi Pratama",
+    "dueDate": "2026-10-01"
+  },
+  {
+    "id": 4,
+    "title": "Guard house floor is slippery",
+    "site": "Plant 1",
+    "severity": "High",
+    "status": "Open",
+    "owner": "Rudi Hartono",
+    "dueDate": "2026-10-05"
+  },
+  {
+    "id": 5,
+    "title": "Chemical drum labels missing (red category)",
+    "site": "Plant 3",
+    "severity": "High",
+    "status": "Open",
+    "owner": "Andi Pratama",
+    "dueDate": "2026-10-08"
+  },
+  {
+    "id": 6,
+    "title": "MSDS binder not updated for new solvent",
+    "site": "Plant 2",
+    "severity": "High",
+    "status": "Open",
+    "owner": "Dewi Lestari",
+    "dueDate": "2026-10-12"
+  },
+  {
+    "id": 7,
+    "title": "Machine guarding gap at press 2",
+    "site": "Plant 1",
+    "severity": "High",
+    "status": "Verifying",
+    "owner": "Rudi Hartono",
+    "dueDate": "2026-09-26"
+  },
+  {
+    "id": 8,
+    "title": "Waste water pH log incomplete",
+    "site": "Plant 2",
+    "severity": "Medium",
+    "status": "Verifying",
+    "owner": "Dewi Lestari",
+    "dueDate": "2026-09-30"
+  },
+  {
+    "id": 9,
+    "title": "PPE spot audit: 3 workers without earplugs",
+    "site": "Plant 1",
+    "severity": "Medium",
+    "status": "Closed",
+    "owner": "Sari Wulandari",
+    "dueDate": "2026-09-20"
+  },
+  {
+    "id": 10,
+    "title": "Forklift pre-use checklist not signed",
+    "site": "Warehouse 1",
+    "severity": "Medium",
+    "status": "Open",
+    "owner": "Budi Setiawan",
+    "dueDate": "2026-10-10"
+  },
+  {
+    "id": 11,
+    "title": "Spill kit contents incomplete",
+    "site": "Warehouse 1",
+    "severity": "Medium",
+    "status": "In Progress",
+    "owner": "Budi Setiawan",
+    "dueDate": "2026-10-07"
+  },
+  {
+    "id": 12,
+    "title": "Fire extinguisher inspection tag overdue",
+    "site": "Plant 3",
+    "severity": "Low",
+    "status": "Closed",
+    "owner": "Andi Pratama",
+    "dueDate": "2026-09-15"
+  }
+]
