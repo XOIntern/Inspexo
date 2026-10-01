@@ -1,20 +1,87 @@
 // use prisma-8
 
 model User {
+  id              Uuid         @id @default(uuid(7))
+  email           VarChar(255) @unique
+  name            VarChar(255)
+  passwordHash    VarChar(255)?
+  role            String
+  department      VarChar(128)?
+  status          String       @default("active")
+  emailVerifiedAt Timestamptz?
+  createdAt       temporal.createdAt()
+  updatedAt       temporal.updatedAt()
+
+  sites                   UserSite[]
+  emailVerificationTokens EmailVerificationToken[]
+  sessions                Session[]
+
+  // VarChar + CHECK instead of PSL enum — enum emit failed against
+  // the installed rc CLI pair (members[].model). Upgrade path: switch to enums
+  // when the Prisma 8 packages reach matching stable versions.
+  // No public registration: every user is created by an ADMIN with an explicit
+  // role, so role is NOT NULL (Phase 1 nullable pending-provisioning is gone).
+  @@check(expression: "role IN ('admin', 'verificator', 'auditor', 'auditee')", name: "user_role_valid")
+  @@check(expression: "status IN ('active', 'inactive', 'suspended')", name: "user_status_valid")
+  @@check(expression: "\"emailVerifiedAt\" IS NULL OR \"emailVerifiedAt\" >= \"createdAt\"", name: "user_email_verified_after_created")
+  @@index(expression: "lower(email)", unique: true, name: "user_email_lower")
+
+  @@map("user")
+}
+
+model Site {
   id        Uuid         @id @default(uuid(7))
-  email     VarChar(255) @unique
+  code      VarChar(64)  @unique
   name      VarChar(255)
-  password  VarChar(255)
-  role      String       @default("hse_officer")
-  status    String       @default("active")
   createdAt temporal.createdAt()
   updatedAt temporal.updatedAt()
 
-  // ponytail: VarChar + CHECK instead of PSL enum — enum emit failed against
-  // the installed rc CLI pair (members[].model). Upgrade path: switch to enums
-  // when the Prisma 8 packages reach matching stable versions.
-  @@check(expression: "role IN ('admin', 'hse_manager', 'hse_officer', 'viewer')", name: "user_role_valid")
-  @@check(expression: "status IN ('active', 'inactive', 'suspended')", name: "user_status_valid")
+  users UserSite[]
 
-  @@map("user")
+  @@map("site")
+}
+
+model UserSite {
+  userId    Uuid
+  siteId    Uuid
+  createdAt temporal.createdAt()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  site Site @relation(fields: [siteId], references: [id], onDelete: Restrict)
+
+  @@id([userId, siteId])
+  @@index([siteId])
+
+  @@map("user_site")
+}
+
+model EmailVerificationToken {
+  id        Uuid        @id @default(uuid(7))
+  userId    Uuid
+  tokenHash VarChar(64) @unique
+  expiresAt Timestamptz
+  usedAt    Timestamptz?
+  createdAt temporal.createdAt()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+
+  @@map("email_verification_token")
+}
+
+model Session {
+  id        Uuid        @id @default(uuid(7))
+  userId    Uuid
+  jti       VarChar(64) @unique
+  expiresAt Timestamptz
+  revokedAt Timestamptz?
+  createdAt temporal.createdAt()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+
+  @@map("session")
 }

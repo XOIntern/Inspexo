@@ -53,7 +53,7 @@ describe("Users page", () => {
 
     expect(screen.getByText("Rina Kusuma")).toBeInTheDocument();
     expect(screen.getByText("rina.kusuma@inspexo.id")).toBeInTheDocument();
-    expect(screen.getAllByText("HSE Officer").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Auditee").length).toBeGreaterThan(0);
   });
 
   it("filters rows by search term", async () => {
@@ -82,7 +82,7 @@ describe("Users page", () => {
     render(<UserTable data={sampleUsers} />);
 
     await user.click(screen.getByRole("combobox", { name: /filter role/i }));
-    await user.click(screen.getByRole("option", { name: "Viewer" }));
+    await user.click(screen.getByRole("option", { name: "Verificator" }));
 
     expect(screen.getByText("Dewi Lestari")).toBeInTheDocument();
     expect(screen.queryByText("Rina Kusuma")).not.toBeInTheDocument();
@@ -102,7 +102,7 @@ describe("Users page", () => {
     const result = userFormSchema.safeParse({
       name: "X",
       email: "not-an-email",
-      role: "viewer",
+      role: "auditee",
       status: "active",
     });
     expect(result.success).toBe(false);

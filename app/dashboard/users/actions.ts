@@ -10,14 +10,15 @@ import { userFormSchema } from "./users-data"
 // Input create/update memakai brand Varchar<N> (phantom type; runtime string biasa).
 const varchar = <N extends number>(value: string) => value as Varchar<N>
 
-// Buat user baru. Password "-" placeholder — hashing menyusul saat auth di-wire.
+// Buat user baru. passwordHash "-" placeholder — admin sets the real temporary
+// password out-of-band; hashing menyusul saat auth di-wire.
 export async function createUser(input: unknown) {
   const data = userFormSchema.parse(input)
   await db.orm.public.User.create({
     id: crypto.randomUUID(),
     email: varchar<255>(data.email),
     name: varchar<255>(data.name),
-    password: varchar<255>("-"),
+    passwordHash: varchar<255>("-"),
     role: data.role,
     status: data.status,
   })

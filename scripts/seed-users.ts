@@ -16,7 +16,7 @@ for (const u of sampleUsers) {
     id: u.id,
     email: u.email,
     name: u.name,
-    password: "-",
+    passwordHash: "-",
     role: u.role,
     status: u.status,
   });

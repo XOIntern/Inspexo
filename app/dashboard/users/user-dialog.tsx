@@ -31,7 +31,7 @@ import {
 } from "./users-data"
 
 function RoleStatusSelects({ user }: { user?: UserRow }) {
-  const [role, setRole] = React.useState<UserRow["role"]>(user?.role ?? "hse_officer")
+  const [role, setRole] = React.useState<UserRow["role"]>(user?.role ?? "auditee")
   const [status, setStatus] = React.useState<UserRow["status"]>(user?.status ?? "active")
   return (
     <>
@@ -106,7 +106,7 @@ export function UserDialog({
       id: user?.id,
       name: String(formData.get("name") ?? ""),
       email: String(formData.get("email") ?? ""),
-      role: String(formData.get("role") ?? "hse_officer"),
+      role: String(formData.get("role") ?? "auditee"),
       status: String(formData.get("status") ?? "active"),
     }
     // Server action melempar saat zod gagal — tampilkan pesan generik.

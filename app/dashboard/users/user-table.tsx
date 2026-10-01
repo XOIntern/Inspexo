@@ -69,9 +69,9 @@ const columnHelper = createColumnHelper<typeof features, UserRow>()
 
 const roleVariant: Record<UserRow["role"], string> = {
   admin: "bg-primary/15 text-primary",
-  hse_manager: "bg-info/15 text-info",
-  hse_officer: "bg-secondary text-secondary-foreground",
-  viewer: "bg-accent text-accent-foreground",
+  verificator: "bg-info/15 text-info",
+  auditor: "bg-secondary text-secondary-foreground",
+  auditee: "bg-accent text-accent-foreground",
 }
 const statusVariant: Record<UserRow["status"], string> = {
   active: "bg-success/15 text-success",
