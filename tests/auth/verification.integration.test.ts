@@ -52,6 +52,7 @@ function fakeMailer(): Mailer & { sent: Array<{ to: string; link: string }> } {
       sent.push(email);
       return { id: "fake-id" };
     },
+    sendPasswordResetEmail: async () => ({ id: "fake-id" }),
   };
 }
 

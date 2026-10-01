@@ -40,6 +40,7 @@ describe("mailer boundary", () => {
         sent.push(email);
         return { id: "fake-id" };
       },
+      sendPasswordResetEmail: async () => ({ id: "fake-id" }),
     };
     const result = await fake.sendVerificationEmail({
       to: "sari@inspexo.id",

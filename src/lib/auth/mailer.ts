@@ -19,6 +19,7 @@ export type SentEmail = {
 
 export interface Mailer {
   sendVerificationEmail(email: VerificationEmail): Promise<SentEmail>;
+  sendPasswordResetEmail(to: string, link: string): Promise<SentEmail>;
 }
 
 /** Resend's onboarding sender — delivers to the Resend account's own email
@@ -48,6 +49,30 @@ export class ResendMailer implements Mailer {
     ]);
     if (error || !data) {
       throw new Error(`Verification email was not accepted: ${error?.message ?? "unknown error"}.`);
+    }
+    return { id: data.id };
+  }
+
+  async sendPasswordResetEmail(to: string, link: string): Promise<SentEmail> {
+    const apiKey = process.env["RESEND_API_KEY"];
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY is not configured.");
+    }
+    const resend = new Resend(apiKey);
+    const send = resend.emails.send({
+      from: VERIFICATION_SENDER,
+      to,
+      subject: "Reset your InspeXO password",
+      text: `Reset your password by opening this link (valid 1 hour, single use):\n\n${link}\n\nIf you did not request this, ignore it — your password is unchanged.`,
+    });
+    const { data, error } = await Promise.race([
+      send,
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Password reset email timed out.")), 10_000),
+      ),
+    ]);
+    if (error || !data) {
+      throw new Error(`Password reset email was not accepted: ${error?.message ?? "unknown error"}.`);
     }
     return { id: data.id };
   }

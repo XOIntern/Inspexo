@@ -111,3 +111,18 @@ model AuditLog {
 
   @@map("audit_log")
 }
+
+model PasswordResetToken {
+  id        Uuid        @id @default(uuid(7))
+  userId    Uuid
+  tokenHash VarChar(64) @unique
+  expiresAt Timestamptz
+  usedAt    Timestamptz?
+  createdAt temporal.createdAt()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+
+  @@map("password_reset_token")
+}

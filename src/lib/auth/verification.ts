@@ -37,6 +37,9 @@ export const VERIFY_MAX_ATTEMPTS = 100;
 /** Future page path for the link. No UI is built in this phase. */
 export const VERIFY_PAGE_PATH = "/auth/verify-email";
 
+/** Future page path for reset links. No UI is built in this phase. */
+export const RESET_PAGE_PATH = "/auth/reset-password";
+
 export const GENERIC_VERIFICATION_MESSAGE = "Invalid or expired verification link.";
 
 export function generateRawToken(): string {
@@ -49,6 +52,10 @@ export function hashToken(rawToken: string): string {
 
 export function buildVerificationLink(origin: string, rawToken: string): string {
   return `${origin.replace(/\/$/, "")}${VERIFY_PAGE_PATH}?token=${encodeURIComponent(rawToken)}`;
+}
+
+export function buildResetLink(origin: string, rawToken: string): string {
+  return `${origin.replace(/\/$/, "")}${RESET_PAGE_PATH}?token=${encodeURIComponent(rawToken)}`;
 }
 
 export type IssuedToken = {
