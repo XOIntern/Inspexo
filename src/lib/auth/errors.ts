@@ -33,6 +33,8 @@ export const AUTH_ERROR_CODES = [
   "SESSION_INVALID", // undecryptable, expired, missing/revoked row — 401 generic
   "ACCOUNT_DISABLED", // valid session, account deactivated — 403 (identity proven)
   "RATE_LIMITED", // throttle exhausted — 429
+  "FORBIDDEN_ROLE", // authenticated but role not allowed — 403 (identity proven)
+  "FORBIDDEN_SITE", // authenticated but no site assignment — 403 (identity proven)
 ] as const;
 
 export type AuthErrorCode = (typeof AUTH_ERROR_CODES)[number];
@@ -42,6 +44,8 @@ const AUTH_ERROR_STATUS: Record<AuthErrorCode, 401 | 403 | 429> = {
   SESSION_INVALID: 401,
   ACCOUNT_DISABLED: 403,
   RATE_LIMITED: 429,
+  FORBIDDEN_ROLE: 403,
+  FORBIDDEN_SITE: 403,
 };
 
 /** Authentication/session failure. Messages are safe to send to clients. */

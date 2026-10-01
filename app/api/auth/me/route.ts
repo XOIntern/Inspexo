@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { currentUserResponse } from "@/src/lib/auth/current-user";
 
-// Legacy name for the same current-user endpoint. Behavior is identical to
-// GET /api/auth/me by construction — both delegate to currentUserResponse.
 export async function GET(req: NextRequest): Promise<NextResponse> {
   return currentUserResponse(req);
 }

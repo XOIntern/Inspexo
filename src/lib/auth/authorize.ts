@@ -1,17 +1,27 @@
-// Authorization gate for admin provisioning. Server-only.
+// Authorization gates. Server-only.
+//
+// Vocabulary (the contract future teams code against):
+// - authentication = WHO this is (cookie → PASETO → DB user). Failures → 401.
+// - authorization  = MAY they do this (role + site scope). Failures → 403.
+// - role           = a data column on User, assigned by an admin, never by
+//                    the user, never carried in the token.
+// - permission     = a capability derived from role IN CODE (no permissions
+//                    table — a DB edit must never grant unreviewed power).
+//                    The HSE permission vocabulary itself is domain logic and
+//                    lives with the domain, not here.
+// - site scope     = UserSite join rows, the ONLY source of facility access.
 //
 // requireAdmin re-reads the caller row from the database on every call —
 // never trusts a role string handed in from outside. A role change or
-// deactivation takes effect on the very next call, with no token reissue
-// (there are no tokens yet; when sessions land, this same function guards
-// the provisioning path with the session's user id).
+// deactivation takes effect on the very next call, with no token reissue.
 //
-// Throws ProvisionError; never returns a boolean (callers must not branch
-// around authorization with an `if` they can forget).
+// All gates throw; never return a boolean (callers must not branch around
+// authorization with an `if` they can forget).
 
 import { db } from "@/src/prisma/db";
 
-import { ProvisionError } from "./errors";
+import { AuthError, ProvisionError } from "./errors";
+import type { PublicUser } from "./session";
 
 export type AdminCaller = {
   id: string;
@@ -36,4 +46,33 @@ export async function requireAdmin(callerId: string | null): Promise<AdminCaller
     throw new ProvisionError("FORBIDDEN_NOT_ADMIN", "Admin privileges required.");
   }
   return { id: caller.id, email: caller.email, role: caller.role, status: caller.status };
+}
+
+/**
+ * Require the user to hold one of the allowed roles. Role comes from the
+ * already-loaded user (re-read from the DB at authentication time), never
+ * from token claims. Single-admin note: "admin" is assignable here as a
+ * value to check against — assignment policy lives in provision.ts.
+ */
+export function requireRole(user: PublicUser, ...allowed: string[]): PublicUser {
+  if (!allowed.includes(user.role)) {
+    throw new AuthError("FORBIDDEN_ROLE", "Insufficient role.");
+  }
+  return user;
+}
+
+/**
+ * Require a UserSite row for (user, site). One indexed existence check for
+ * every role — the auditee single-site restriction falls out of the data
+ * (exactly one row exists) with no role branch in the path.
+ */
+export async function requireSiteAccess(user: PublicUser, siteId: string): Promise<PublicUser> {
+  const assignment = await db.orm.public.UserSite.where({
+    userId: user.id,
+    siteId,
+  }).first();
+  if (assignment === null) {
+    throw new AuthError("FORBIDDEN_SITE", "Site access denied.");
+  }
+  return user;
 }
