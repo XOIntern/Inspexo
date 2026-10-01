@@ -86,3 +86,11 @@ model Session {
 
   @@map("session")
 }
+
+model AuthThrottle {
+  key             VarChar(128) @unique
+  windowStartedAt Timestamptz
+  attempts        Int          @default(0)
+
+  @@map("auth_throttle")
+}

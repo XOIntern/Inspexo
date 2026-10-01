@@ -9,7 +9,7 @@
 // carries its own salt and parameters.
 
 import { randomBytes } from "node:crypto";
-import { hash as argonHash } from "@node-rs/argon2";
+import { hash as argonHash, verify as argonVerify } from "@node-rs/argon2";
 
 export const ARGON2_MEMORY_COST = 19456; // KiB (19 MiB)
 export const ARGON2_TIME_COST = 2;
@@ -33,4 +33,26 @@ export async function hashPassword(password: string): Promise<string> {
     timeCost: ARGON2_TIME_COST,
     parallelism: ARGON2_PARALLELISM,
   });
+}
+
+export async function verifyPassword(hash: string, password: string): Promise<boolean> {
+  return argonVerify(hash, password);
+}
+
+// Anti-enumeration by timing: the unknown-email path must cost the same as a
+// real verification (~13 ms), or response latency reveals which emails exist.
+// A single process-wide dummy hash of a random secret; slow hashing is safe
+// here because it runs exactly once per failed login, never as a lookup.
+let dummyHashPromise: Promise<string> | null = null;
+
+export async function verifyDummy(password: string): Promise<boolean> {
+  if (dummyHashPromise === null) {
+    dummyHashPromise = argonHash(randomBytes(32).toString("base64url"), {
+      memoryCost: ARGON2_MEMORY_COST,
+      timeCost: ARGON2_TIME_COST,
+      parallelism: ARGON2_PARALLELISM,
+    });
+  }
+  await argonVerify(await dummyHashPromise, password);
+  return false;
 }

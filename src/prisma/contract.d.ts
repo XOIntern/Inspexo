@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'d48bf108b2dccccbff15da4a9ca58db35f8675bce45a7da06a6c696599147e9d'>;
+  StorageHashBase<'484090d9066252fcdc71c5c43edff77e86daaab9b2cee8560fad4001c5af12ec'>;
 export type ExecutionHash =
   ExecutionHashBase<'00e573346f9ba31ed81898ed59b67db676bf6e1b43a2fe13cb455be119c6d9d3'>;
 export type ProfileHash =
@@ -250,6 +250,11 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
 
 export type FieldOutputTypes = {
   readonly public: {
+    readonly AuthThrottle: {
+      readonly attempts: CodecTypes['pg/int4@1']['output'];
+      readonly key: Varchar<128>;
+      readonly windowStartedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly EmailVerificationToken: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -295,6 +300,11 @@ export type FieldOutputTypes = {
 };
 export type FieldInputTypes = {
   readonly public: {
+    readonly AuthThrottle: {
+      readonly attempts: CodecTypes['pg/int4@1']['input'];
+      readonly key: CodecTypes['sql/varchar@1']['input'];
+      readonly windowStartedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly EmailVerificationToken: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -340,6 +350,11 @@ export type FieldInputTypes = {
 };
 export type StorageColumnTypes = {
   readonly public: {
+    readonly auth_throttle: {
+      readonly attempts: CodecTypes['pg/int4@1']['output'];
+      readonly key: Varchar<128>;
+      readonly windowStartedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly email_verification_token: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -385,6 +400,11 @@ export type StorageColumnTypes = {
 };
 export type StorageColumnInputTypes = {
   readonly public: {
+    readonly auth_throttle: {
+      readonly attempts: CodecTypes['pg/int4@1']['input'];
+      readonly key: CodecTypes['sql/varchar@1']['input'];
+      readonly windowStartedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly email_verification_token: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -430,6 +450,12 @@ export type StorageColumnInputTypes = {
 };
 
 export namespace Models {
+  export type public_AuthThrottle = {
+    attempts: CodecTypes['pg/int4@1']['output'];
+    key: Varchar<128>;
+    windowStartedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    readonly [RelationKeys]?: never;
+  };
   export type public_EmailVerificationToken = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -488,6 +514,7 @@ export namespace Models {
 
 export declare const models: {
   public: {
+    AuthThrottle: Models.public_AuthThrottle;
     EmailVerificationToken: Models.public_EmailVerificationToken;
     Session: Models.public_Session;
     Site: Models.public_Site;
@@ -514,6 +541,33 @@ type ContractBase = Omit<
         readonly kind: 'postgres-schema';
         readonly entries: {
           readonly table: {
+            readonly auth_throttle: {
+              columns: {
+                readonly attempts: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
+                readonly key: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 128 };
+                };
+                readonly windowStartedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              uniques: readonly [{ readonly columns: readonly ['key'] }];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
             readonly email_verification_token: {
               columns: {
                 readonly createdAt: {
@@ -827,6 +881,10 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
+    readonly auth_throttle: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'AuthThrottle';
+    };
     readonly email_verification_token: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'EmailVerificationToken';
@@ -840,6 +898,39 @@ type ContractBase = Omit<
     readonly namespaces: {
       readonly public: {
         readonly models: {
+          readonly AuthThrottle: {
+            readonly fields: {
+              readonly attempts: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly key: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 128 };
+                };
+              };
+              readonly windowStartedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'auth_throttle';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly attempts: { readonly column: 'attempts' };
+                readonly key: { readonly column: 'key' };
+                readonly windowStartedAt: { readonly column: 'windowStartedAt' };
+              };
+            };
+          };
           readonly EmailVerificationToken: {
             readonly fields: {
               readonly createdAt: {

@@ -5,6 +5,38 @@ Phase 3: users are created **only** via `provisionUser()` in
 `/register` endpoint. The caller must be an active `admin`; business roles
 (`verificator`, `auditor`, `auditee`) can never provision.
 
+## Session key (development)
+
+Login sessions are PASETO v3.local tokens sealed with a 32-byte key stored
+as a PASERK string (`k3.local.…`, 52 chars) in `PASETO_SESSION_KEY`.
+Generate a dev-only key locally — never commit a real secret
+(`.env.example` carries a placeholder; production uses its own key):
+
+```bash
+node --input-type=module -e \
+  "import { LocalProtocol } from 'paseto'; \
+   import { ExportKeyFactory, GenerateKeyFactory } from 'paseto/v3/local'; \
+   const v3 = new LocalProtocol(GenerateKeyFactory, ExportKeyFactory); \
+   v3.ExportKey(await v3.GenerateKey({ extractable: true })).then(console.log)"
+```
+
+Append the output to `.env` as `PASETO_SESSION_KEY="<output>"`. The server
+fails fast at first login when the variable is missing or malformed.
+
+## Login behavior (Phase 4)
+
+- `POST /api/auth/login` accepts email + password for admin-provisioned
+  accounts. Unknown email, wrong password, and inactive/suspended accounts
+  all return the identical `401 {"error":"Invalid email or password."}`.
+- Unverified emails are **not** blocked: login succeeds with
+  `emailVerified: false` and the dashboard shows a verification notice.
+- The session lives in an `HttpOnly` + `Secure` + `SameSite=Lax` cookie
+  (`__Host-inspexo_session`, 8 h). `POST /api/auth/logout` revokes the
+  server-side session and clears the cookie; `GET /api/auth/session`
+  returns the current user or 401.
+- Failed logins are throttled per email (5 per 15 min → `429`); a success
+  resets the window.
+
 ## Bootstrapping the first admin (manual, one-time)
 
 Single-admin system: the API rejects `role: "admin"`, so the first admin is

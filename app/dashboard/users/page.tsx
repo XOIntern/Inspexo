@@ -26,7 +26,7 @@ async function getUsers(): Promise<UserRow[]> {
       email: u.email,
       role: u.role as UserRow["role"],
       status: u.status as UserRow["status"],
-      createdAt: u.createdAt.toISOString(),
+      createdAt: u.createdAt.toString(),
     }));
   } catch {
     // DB belum di-init/seed (atau belum jalan) — fallback data contoh.
