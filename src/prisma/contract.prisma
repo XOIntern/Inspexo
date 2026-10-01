@@ -5,8 +5,16 @@ model User {
   email     VarChar(255) @unique
   name      VarChar(255)
   password  VarChar(255)
+  role      String       @default("hse_officer")
+  status    String       @default("active")
   createdAt temporal.createdAt()
   updatedAt temporal.updatedAt()
+
+  // ponytail: VarChar + CHECK instead of PSL enum — enum emit failed against
+  // the installed rc CLI pair (members[].model). Upgrade path: switch to enums
+  // when the Prisma 8 packages reach matching stable versions.
+  @@check(expression: "role IN ('admin', 'hse_manager', 'hse_officer', 'viewer')", name: "user_role_valid")
+  @@check(expression: "status IN ('active', 'inactive', 'suspended')", name: "user_status_valid")
 
   @@map("user")
 }
