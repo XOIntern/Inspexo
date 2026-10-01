@@ -125,14 +125,10 @@ export function Header() {
     setIsMenuOpen(false);
     setShowSplash(true);
 
-    navigationTimer.current = setTimeout(() => {
-      setShowSplash(false);
-
       navigationTimer.current = setTimeout(() => {
         navigationTimer.current = null;
         router.push("/auth/login");
       }, 900);
-    }, 1600);
   };
 
   const handleNavClick = () => {

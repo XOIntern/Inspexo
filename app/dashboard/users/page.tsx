@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import { UserTable } from "./user-table";
-import { sampleUsers, type UserRow } from "./users-data";
+import type { UserRow } from "./users-data";
 
 // Data dari DB per-request — jangan di-prerender saat build.
 export const dynamic = "force-dynamic";
@@ -28,9 +28,10 @@ async function getUsers(): Promise<UserRow[]> {
       status: u.status as UserRow["status"],
       createdAt: u.createdAt.toString(),
     }));
-  } catch {
-    // DB belum di-init/seed (atau belum jalan) — fallback data contoh.
-    return sampleUsers;
+  } catch (err) {
+    // DB belum di-init/seed (atau belum jalan) — biarkan error boundary yang handle.
+    console.error("Failed to load users:", err);
+    throw err;
   }
 }
 
