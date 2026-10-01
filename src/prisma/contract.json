@@ -337,6 +337,13 @@
                   "kind": "scalar"
                 }
               },
+              "mustChangePassword": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "name": {
                 "nullable": false,
                 "type": {
@@ -442,6 +449,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "mustChangePassword": {
+                  "column": "mustChangePassword"
                 },
                 "name": {
                   "column": "name"
@@ -809,6 +819,15 @@
                   "nativeType": "uuid",
                   "nullable": false
                 },
+                "mustChangePassword": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "name": {
                   "codecId": "sql/varchar@1",
                   "nativeType": "character varying",
@@ -953,7 +972,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "74fed693f289232e4937ce638dd3ffa71332b5cb676d82142d09d7e619bb40c2"
+    "storageHash": "d48bf108b2dccccbff15da4a9ca58db35f8675bce45a7da06a6c696599147e9d"
   },
   "execution": {
     "executionHash": "00e573346f9ba31ed81898ed59b67db676bf6e1b43a2fe13cb455be119c6d9d3",

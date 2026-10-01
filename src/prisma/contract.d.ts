@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'74fed693f289232e4937ce638dd3ffa71332b5cb676d82142d09d7e619bb40c2'>;
+  StorageHashBase<'d48bf108b2dccccbff15da4a9ca58db35f8675bce45a7da06a6c696599147e9d'>;
 export type ExecutionHash =
   ExecutionHashBase<'00e573346f9ba31ed81898ed59b67db676bf6e1b43a2fe13cb455be119c6d9d3'>;
 export type ProfileHash =
@@ -279,6 +279,7 @@ export type FieldOutputTypes = {
       readonly email: Varchar<255>;
       readonly emailVerifiedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly mustChangePassword: CodecTypes['pg/bool@1']['output'];
       readonly name: Varchar<255>;
       readonly passwordHash: Varchar<255> | null;
       readonly role: CodecTypes['pg/text@1']['output'];
@@ -323,6 +324,7 @@ export type FieldInputTypes = {
       readonly email: CodecTypes['sql/varchar@1']['input'];
       readonly emailVerifiedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly mustChangePassword: CodecTypes['pg/bool@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly passwordHash: CodecTypes['sql/varchar@1']['input'] | null;
       readonly role: CodecTypes['pg/text@1']['input'];
@@ -367,6 +369,7 @@ export type StorageColumnTypes = {
       readonly email: Varchar<255>;
       readonly emailVerifiedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly mustChangePassword: CodecTypes['pg/bool@1']['output'];
       readonly name: Varchar<255>;
       readonly passwordHash: Varchar<255> | null;
       readonly role: CodecTypes['pg/text@1']['output'];
@@ -411,6 +414,7 @@ export type StorageColumnInputTypes = {
       readonly email: CodecTypes['sql/varchar@1']['input'];
       readonly emailVerifiedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly mustChangePassword: CodecTypes['pg/bool@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly passwordHash: CodecTypes['sql/varchar@1']['input'] | null;
       readonly role: CodecTypes['pg/text@1']['input'];
@@ -461,6 +465,7 @@ export namespace Models {
     email: Varchar<255>;
     emailVerifiedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     id: CodecTypes['pg/uuid@1']['output'];
+    mustChangePassword: CodecTypes['pg/bool@1']['output'];
     name: Varchar<255>;
     passwordHash: Varchar<255> | null;
     role: CodecTypes['pg/text@1']['output'];
@@ -696,6 +701,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
+                };
+                readonly mustChangePassword: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
                 };
                 readonly name: {
                   readonly nativeType: 'character varying';
@@ -1052,6 +1066,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
+              readonly mustChangePassword: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
               readonly name: {
                 readonly nullable: false;
                 readonly type: {
@@ -1128,6 +1146,7 @@ type ContractBase = Omit<
                 readonly email: { readonly column: 'email' };
                 readonly emailVerifiedAt: { readonly column: 'emailVerifiedAt' };
                 readonly id: { readonly column: 'id' };
+                readonly mustChangePassword: { readonly column: 'mustChangePassword' };
                 readonly name: { readonly column: 'name' };
                 readonly passwordHash: { readonly column: 'passwordHash' };
                 readonly role: { readonly column: 'role' };

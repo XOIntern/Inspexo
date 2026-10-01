@@ -5,6 +5,7 @@ model User {
   email           VarChar(255) @unique
   name            VarChar(255)
   passwordHash    VarChar(255)?
+  mustChangePassword Boolean @default(true)
   role            String
   department      VarChar(128)?
   status          String       @default("active")
