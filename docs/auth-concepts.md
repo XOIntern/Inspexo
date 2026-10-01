@@ -51,6 +51,24 @@ Cardinality is enforced at provisioning time (`provisionUser`).
 | `POST /api/auth/verify-email` | redeem a verification token, no session needed |
 | `POST /api/auth/resend-verification` | reissue + resend the caller's own link (throttled) |
 
+## Admin plane (`/api/admin/*` — admin role required on every route)
+
+The UI consumes these; it never touches the database. Mutations reuse the
+tested backend functions, so the rules (cardinality, single-admin guards,
+no `admin` assignment) are identical to the helper layer.
+
+| Endpoint | Meaning |
+|---|---|
+| `GET /api/admin/users` | list with `search`/`role`/`status`/`siteId` + `page`/`pageSize` |
+| `POST /api/admin/users` | provision one user; `tempPassword` returned once (201) |
+| `GET /api/admin/users/[id]` | detail with site objects + verification flags |
+| `PATCH /api/admin/users/[id]/role` | change role (cardinality must already hold) |
+| `PUT /api/admin/users/[id]/sites` | replace site assignments wholesale |
+| `PATCH /api/admin/users/[id]/status` | activate/deactivate (never self) |
+| `POST /api/admin/users/import` | bulk create without credentials (per-row envelope) |
+| `POST /api/admin/users/credentials` | batch credential generation; the response is the export |
+| `GET /api/admin/sites` | site list for assignment pickers |
+
 The safe shape is `id, name, email, role, status, department, siteIds,
 emailVerified, mustChangePassword`. `passwordHash`, tokens, and verification
 secrets never leave the server — asserted by tests, not just by review.
