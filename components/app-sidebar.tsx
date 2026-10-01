@@ -3,6 +3,7 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 import { NavSites } from "@/components/nav-sites"
 import { NavMain } from "@/components/nav-main"
@@ -23,6 +24,7 @@ import {
   TriangleAlertIcon,
   WrenchIcon,
   FileTextIcon,
+  UsersIcon,
   Settings2Icon,
   CircleHelpIcon,
 } from "lucide-react"
@@ -38,7 +40,6 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: <LayoutDashboardIcon />,
-      isActive: true,
     },
     {
       title: "Audits",
@@ -59,6 +60,11 @@ const data = {
       title: "Reports",
       url: "#",
       icon: <FileTextIcon />,
+    },
+    {
+      title: "Users",
+      url: "/dashboard/users",
+      icon: <UsersIcon />,
     },
   ],
   navSecondary: [
@@ -97,6 +103,12 @@ const data = {
   ],
 }
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  // Active-state mengikuti URL, bukan hardcode per item.
+  const pathname = usePathname()
+  const navMain = data.navMain.map((item) => ({
+    ...item,
+    isActive: item.url !== "#" && pathname === item.url,
+  }))
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -119,7 +131,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
         <NavSites items={data.sites} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
