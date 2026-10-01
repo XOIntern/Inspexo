@@ -27,14 +27,35 @@ import {
   UsersIcon,
   Settings2Icon,
   CircleHelpIcon,
+  ShieldCheckIcon,
 } from "lucide-react"
 
+export type SidebarUser = {
+  name: string
+  email: string
+  avatar: string
+}
+
+export type SidebarSite = {
+  name: string
+  url: string
+}
+
+export type SidebarNavItem = {
+  title: string
+  url: string
+  icon: React.ReactNode
+  roles?: string[]
+}
+
+const defaultUser: SidebarUser = {
+  name: "Rudi Hartono",
+  email: "rudi@inspexo.id",
+  avatar: "",
+}
+
 const data = {
-  user: {
-    name: "Rudi Hartono",
-    email: "rudi@inspexo.id",
-    avatar: "",
-  },
+  user: defaultUser,
   navMain: [
     {
       title: "Dashboard",
@@ -65,8 +86,15 @@ const data = {
       title: "Users",
       url: "/dashboard/users",
       icon: <UsersIcon />,
+      roles: ["admin"],
     },
-  ],
+    {
+      title: "Administration",
+      url: "/admin",
+      icon: <ShieldCheckIcon />,
+      roles: ["admin"],
+    },
+  ] as SidebarNavItem[],
   navSecondary: [
     {
       title: "Settings",
@@ -102,13 +130,33 @@ const data = {
     },
   ],
 }
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  user,
+  sites,
+  role,
+  navMain: navMainOverride,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
+  user?: SidebarUser
+  sites?: SidebarSite[]
+  role?: string
+  navMain?: SidebarNavItem[]
+}) {
   // Active-state mengikuti URL, bukan hardcode per item.
   const pathname = usePathname()
-  const navMain = data.navMain.map((item) => ({
-    ...item,
-    isActive: item.url !== "#" && pathname === item.url,
+  const resolvedUser = user ?? data.user
+  const resolvedSites = (sites ?? data.sites).map((site) => ({
+    ...site,
+    icon: <ClipboardListIcon />,
   }))
+  // UX-only filtering: the backend remains the authorization boundary.
+  // Without a role (e.g. unauthenticated previews/tests) show everything.
+  const navMain = (navMainOverride ?? data.navMain)
+    .filter((item) => role === undefined || item.roles === undefined || item.roles.includes(role))
+    .map((item) => ({
+      ...item,
+      isActive: item.url !== "#" && pathname === item.url,
+    }))
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -132,11 +180,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
-        <NavSites items={data.sites} />
+        <NavSites items={resolvedSites} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={resolvedUser} />
       </SidebarFooter>
     </Sidebar>
   )

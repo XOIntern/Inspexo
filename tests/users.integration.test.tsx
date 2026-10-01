@@ -6,9 +6,10 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { UserTable } from "@/app/dashboard/users/user-table";
 import { sampleUsers, userFormSchema } from "@/app/dashboard/users/users-data";
 
-// usePathname butuh router context — stub untuk uji active-state sidebar.
+// usePathname/useRouter butuh router context — stub untuk uji active-state sidebar.
 vi.mock("next/navigation", () => ({
   usePathname: () => "/dashboard/users",
+  useRouter: () => ({ refresh: () => undefined, replace: () => undefined }),
 }));
 
 // jsdom tidak punya matchMedia — stub sebelum Sidebar init.

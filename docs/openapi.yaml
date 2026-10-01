@@ -773,6 +773,73 @@ paths:
                 $ref: '#/components/schemas/ErrorBody'
         '500':
           $ref: '#/components/responses/InternalError'
+  /api/admin/users/{id}/contact:
+    patch:
+      tags: [admin]
+      summary: Change a user's name and/or email
+      description: |
+        An email change resets verification (`emailVerifiedAt` → null)
+        and kills live verification tokens in the same transaction —
+        otherwise a new, unverified address would inherit the old
+        address's verified state. Duplicate emails rejected.
+      parameters:
+        - $ref: '#/components/parameters/OriginHeader'
+        - $ref: '#/components/parameters/SessionCookie'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+      responses:
+        '200':
+          description: Contact updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, name, email, emailVerified]
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  emailVerified:
+                    type: boolean
+        '401':
+          $ref: '#/components/responses/SessionInvalid'
+        '403':
+          $ref: '#/components/responses/ForbiddenRole'
+        '404':
+          description: No such user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '422':
+          description: Invalid contact data, duplicate email, or malformed id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBody'
+        '500':
+          $ref: '#/components/responses/InternalError'
   /api/admin/users/{id}/role:
     patch:
       tags: [admin]

@@ -48,8 +48,9 @@ import {
   SearchIcon,
 } from "lucide-react"
 
-import { UserDialog } from "./user-dialog"
-import { setUserStatus } from "./actions"
+import { useRouter } from "next/navigation"
+
+import { UserDialog, type SiteOption } from "./user-dialog"
 import {
   roleLabels,
   statusLabels,
@@ -57,6 +58,20 @@ import {
   USER_STATUSES,
   type UserRow,
 } from "./users-data"
+
+// NOTE: ./actions is superseded by the Admin API. Status toggles go through
+// PATCH /api/admin/users/[id]/status; the backend re-validates everything.
+async function toggleUserStatus(id: string, status: "active" | "inactive"): Promise<void> {
+  const res = await fetch(`/api/admin/users/${id}/status`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error ?? `Request failed (${res.status}).`);
+  }
+}
 
 const features = tableFeatures({
   rowPaginationFeature,
@@ -79,7 +94,16 @@ const statusVariant: Record<UserRow["status"], string> = {
   suspended: "bg-destructive/15 text-destructive",
 }
 
-function RowActions({ user }: { user: UserRow }) {
+function RowActions({
+  user,
+  sites,
+  onChanged,
+}: {
+  user: UserRow;
+  sites: SiteOption[];
+  onChanged: () => void;
+}) {
+  const router = useRouter()
   const isActive = user.status === "active"
   return (
     <DropdownMenu>
@@ -96,15 +120,17 @@ function RowActions({ user }: { user: UserRow }) {
         <span className="sr-only">Open menu</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
-        <UserDialog user={user} triggerLabel="Edit" asMenuItem />
+        <UserDialog user={user} sites={sites} triggerLabel="Edit" asMenuItem onSaved={onChanged} />
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() =>
-            setUserStatus({
-              id: user.id,
-              status: isActive ? "inactive" : "active",
-            })
-          }
+          onClick={() => {
+            void toggleUserStatus(user.id, isActive ? "inactive" : "active")
+              .then(() => {
+                onChanged()
+                router.refresh()
+              })
+              .catch(() => undefined)
+          }}
         >
           {isActive ? "Deactivate" : "Activate"}
         </DropdownMenuItem>
@@ -113,16 +139,19 @@ function RowActions({ user }: { user: UserRow }) {
   )
 }
 
-const columns = columnHelper.columns([
-  columnHelper.accessor("name", {
-    header: "Name",
-    cell: ({ row }) => (
-      <UserDialog
-        user={row.original}
-        triggerLabel={row.original.name}
-      />
-    ),
-  }),
+function makeColumns(sites: SiteOption[], onChanged: () => void) {
+  return columnHelper.columns([
+    columnHelper.accessor("name", {
+      header: "Name",
+      cell: ({ row }) => (
+        <UserDialog
+          user={row.original}
+          sites={sites}
+          triggerLabel={row.original.name}
+          onSaved={onChanged}
+        />
+      ),
+    }),
   columnHelper.accessor("email", {
     header: "Email",
   }),
@@ -154,24 +183,32 @@ const columns = columnHelper.columns([
       </div>
     ),
   }),
-  columnHelper.display({
-    id: "actions",
-    cell: ({ row }) => <RowActions user={row.original} />,
-  }),
-])
+    columnHelper.display({
+      id: "actions",
+      cell: ({ row }) => <RowActions user={row.original} sites={sites} onChanged={onChanged} />,
+    }),
+  ])
+}
 
 function matchesSearch(user: UserRow, term: string): boolean {
   const t = term.toLowerCase()
   return user.name.toLowerCase().includes(t) || user.email.toLowerCase().includes(t)
 }
 
-export function UserTable({ data: initialData }: { data: UserRow[] }) {
+export function UserTable({ data: initialData, sites = [] }: { data: UserRow[]; sites?: SiteOption[] }) {
+  const router = useRouter()
   const [data] = React.useState(() => initialData)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [search, setSearch] = React.useState("")
   const [roleFilter, setRoleFilter] = React.useState("all")
   const [statusFilter, setStatusFilter] = React.useState("all")
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
+
+  const refresh = React.useCallback(() => {
+    router.refresh()
+  }, [router])
+
+  const columns = React.useMemo(() => makeColumns(sites, refresh), [sites, refresh])
 
   const filtered = React.useMemo(() => {
     return data
@@ -247,7 +284,12 @@ export function UserTable({ data: initialData }: { data: UserRow[] }) {
             </SelectContent>
           </Select>
         </div>
-        <UserDialog triggerLabel="Add user" triggerVariant="default" />
+        <UserDialog
+          triggerLabel="Add user"
+          triggerVariant="default"
+          sites={sites}
+          onSaved={refresh}
+        />
       </div>
       <div className="relative flex flex-col gap-4 overflow-auto">
         <div className="overflow-hidden rounded-lg border">

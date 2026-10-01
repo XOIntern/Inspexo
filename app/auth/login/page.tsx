@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import {
   ArrowRight,
@@ -25,9 +26,37 @@ import {
 } from "@/components/ui/input-group";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSignIn() {
+    if (isLoading) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const body = (await res.json()) as { user?: { role?: string }; error?: string };
+      if (!res.ok || !body.user) {
+        // Generic message mirrors the API: never reveals which half failed.
+        setError(body.error ?? "Invalid email or password.");
+        return;
+      }
+      router.replace(body.user.role === "admin" ? "/admin" : "/dashboard");
+      router.refresh();
+    } catch {
+      setError("Unable to reach the server. Try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
@@ -254,9 +283,17 @@ export default function LoginPage() {
                   <Button
                     type="button"
                     className="mt-6 h-12 w-full rounded-full text-sm font-semibold"
+                    disabled={isLoading}
+                    onClick={handleSignIn}
                   >
-                    SIGN IN -&gt;
+                    {isLoading ? "SIGNING IN…" : "SIGN IN ->"}
                   </Button>
+
+                  {error ? (
+                    <p className="mt-3 text-center text-sm text-destructive" role="alert">
+                      {error}
+                    </p>
+                  ) : null}
 
                   {/* Divider */}
                   <div className="my-6 flex items-center gap-3">

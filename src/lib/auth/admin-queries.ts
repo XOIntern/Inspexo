@@ -173,3 +173,35 @@ export async function listSites(): Promise<Array<{ id: string; code: string; nam
   const rows = await db.orm.public.Site.orderBy((s) => s.name.asc()).all();
   return rows.map((r) => ({ id: r.id, code: r.code, name: r.name }));
 }
+
+export type AdminOverview = {
+  totalUsers: number;
+  byRole: Record<string, number>;
+  unverifiedUsers: number;
+  suspendedUsers: number;
+  totalSites: number;
+};
+
+export async function getAdminOverview(): Promise<AdminOverview> {
+  const [total, unverified, suspended, sites, ...roles] = await Promise.all([
+    db.orm.public.User.aggregate((a) => ({ total: a.count() })),
+    db.orm.public.User.where((u) => u.emailVerifiedAt.isNull()).aggregate((a) => ({
+      total: a.count(),
+    })),
+    db.orm.public.User.where({ status: "suspended" }).aggregate((a) => ({
+      total: a.count(),
+    })),
+    db.orm.public.Site.aggregate((a) => ({ total: a.count() })),
+    ...(["admin", "verificator", "auditor", "auditee"] as const).map((role) =>
+      db.orm.public.User.where({ role }).aggregate((a) => ({ total: a.count() })),
+    ),
+  ]);
+  const roleNames = ["admin", "verificator", "auditor", "auditee"] as const;
+  return {
+    totalUsers: total.total,
+    byRole: Object.fromEntries(roleNames.map((role, i) => [role, roles[i]!.total])),
+    unverifiedUsers: unverified.total,
+    suspendedUsers: suspended.total,
+    totalSites: sites.total,
+  };
+}

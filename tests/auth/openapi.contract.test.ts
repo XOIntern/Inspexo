@@ -79,6 +79,7 @@ describe("openapi contract", () => {
         "/api/admin/users/credentials",
         "/api/admin/users/import",
         "/api/admin/users/{id}",
+        "/api/admin/users/{id}/contact",
         "/api/admin/users/{id}/role",
         "/api/admin/users/{id}/sites",
         "/api/admin/users/{id}/status",

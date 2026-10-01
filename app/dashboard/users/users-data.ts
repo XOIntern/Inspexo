@@ -24,6 +24,7 @@ export type UserRow = {
   role: UserRole
   status: UserStatus
   createdAt: string
+  siteIds?: string[]
 }
 
 export const roleLabels: Record<UserRole, string> = {

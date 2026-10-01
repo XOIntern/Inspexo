@@ -1,43 +1,63 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { cookies, headers } from "next/headers";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AuthError } from "@/src/lib/auth/errors";
+import { requireUser } from "@/src/lib/auth/server-user";
+import { requireRole } from "@/src/lib/auth/authorize";
 
 import { UserTable } from "./user-table";
 import type { UserRow } from "./users-data";
 
-// Data dari DB per-request — jangan di-prerender saat build.
+// Data dari Admin API — UI tidak pernah menyentuh database langsung.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Users",
 };
 
-async function getUsers(): Promise<UserRow[]> {
-  try {
-    const { db } = await import("@/src/prisma/db");
-    const rows = await db.orm.public.User.orderBy((u) =>
-      u.createdAt.desc(),
-    ).all();
-    return rows.map((u) => ({
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      role: u.role as UserRow["role"],
-      status: u.status as UserRow["status"],
-      createdAt: u.createdAt.toString(),
-    }));
-  } catch (err) {
-    // DB belum di-init/seed (atau belum jalan) — biarkan error boundary yang handle.
-    console.error("Failed to load users:", err);
-    throw err;
+type SiteOption = {
+  id: string;
+  code: string;
+  name: string;
+};
+
+async function apiGet<T>(path: string): Promise<T> {
+  const host = (await headers()).get("host") ?? "localhost:3000";
+  const proto = process.env.NODE_ENV === "production" ? "https" : "http";
+  const res = await fetch(`${proto}://${host}${path}`, {
+    headers: { cookie: (await cookies()).toString() },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new Error(`Admin API ${path} failed (${res.status}).`);
   }
+  return (await res.json()) as T;
 }
 
 export default async function UsersPage() {
-  const users = await getUsers();
+  let user;
+  try {
+    user = await requireUser();
+  } catch {
+    redirect("/auth/login");
+  }
+  try {
+    requireRole(user, "admin");
+  } catch (error) {
+    if (error instanceof AuthError) {
+      redirect("/dashboard");
+    }
+    throw error;
+  }
 
+  const [{ users }, { sites }] = await Promise.all([
+    apiGet<{ users: UserRow[]; total: number }>("/api/admin/users?pageSize=100"),
+    apiGet<{ sites: SiteOption[] }>("/api/admin/sites"),
+  ]);
   return (
     <SidebarProvider
       style={
@@ -47,7 +67,11 @@ export default async function UsersPage() {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar
+        variant="inset"
+        user={{ name: user.name, email: user.email, avatar: "" }}
+        role={user.role}
+      />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">
@@ -60,7 +84,7 @@ export default async function UsersPage() {
                 </p>
               </div>
               <div className="px-4 lg:px-6">
-                <UserTable data={users} />
+                <UserTable data={users} sites={sites} />
               </div>
             </div>
           </div>

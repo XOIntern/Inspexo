@@ -15,12 +15,21 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    if (!email.trim() || isLoading) return;
 
     setIsLoading(true);
 
-    // TODO: Replace with actual password reset API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // The API always succeeds (anti-enumeration): a link is emailed only
+    // when the address belongs to an active account.
+    try {
+      await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+    } catch {
+      // Network failure looks identical: never reveal account existence.
+    }
 
     setIsLoading(false);
     setIsSubmitted(true);
