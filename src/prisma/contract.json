@@ -4,6 +4,10 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "audit_log": {
+      "model": "AuditLog",
+      "namespace": "public"
+    },
     "auth_throttle": {
       "model": "AuthThrottle",
       "namespace": "public"
@@ -33,6 +37,70 @@
     "namespaces": {
       "public": {
         "models": {
+          "AuditLog": {
+            "fields": {
+              "action": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 64
+                  }
+                }
+              },
+              "actorId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "targetUserId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "action": {
+                  "column": "action"
+                },
+                "actorId": {
+                  "column": "actorId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "targetUserId": {
+                  "column": "targetUserId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "audit_log"
+            }
+          },
           "AuthThrottle": {
             "fields": {
               "attempts": {
@@ -412,6 +480,13 @@
                   }
                 }
               },
+              "passwordSetAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "role": {
                 "nullable": false,
                 "type": {
@@ -506,6 +581,9 @@
                 },
                 "passwordHash": {
                   "column": "passwordHash"
+                },
+                "passwordSetAt": {
+                  "column": "passwordSetAt"
                 },
                 "role": {
                   "column": "role"
@@ -604,6 +682,63 @@
       "public": {
         "entries": {
           "table": {
+            "audit_log": {
+              "columns": {
+                "action": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 64
+                  }
+                },
+                "actorId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "targetUserId": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "actorId"
+                  ],
+                  "name": "audit_log_actorId_idx_a58f6b4b",
+                  "prefix": "audit_log_actorId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "targetUserId"
+                  ],
+                  "name": "audit_log_targetUserId_idx_e0d638f0",
+                  "prefix": "audit_log_targetUserId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "auth_throttle": {
               "columns": {
                 "attempts": {
@@ -927,6 +1062,11 @@
                     "length": 255
                   }
                 },
+                "passwordSetAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
                 "role": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -1055,12 +1195,34 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "484090d9066252fcdc71c5c43edff77e86daaab9b2cee8560fad4001c5af12ec"
+    "storageHash": "a90e539a9f2bc95dd4339ef0bf1da7eefdebab97cfa9ee95eaf6feb588d3caf9"
   },
   "execution": {
-    "executionHash": "00e573346f9ba31ed81898ed59b67db676bf6e1b43a2fe13cb455be119c6d9d3",
+    "executionHash": "0df2b7fa86a5b9d13d8527a26c0945fc819c6f28eab4b220182fa04cb7860100",
     "mutations": {
       "defaults": [
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "createdAt",
+            "namespace": "public",
+            "table": "audit_log"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv7",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "audit_log"
+          }
+        },
         {
           "onCreate": {
             "id": "instantNow",

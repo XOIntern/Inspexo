@@ -5,6 +5,7 @@ model User {
   email           VarChar(255) @unique
   name            VarChar(255)
   passwordHash    VarChar(255)?
+  passwordSetAt   Timestamptz?
   mustChangePassword Boolean @default(true)
   role            String
   department      VarChar(128)?
@@ -93,4 +94,20 @@ model AuthThrottle {
   attempts        Int          @default(0)
 
   @@map("auth_throttle")
+}
+
+model AuditLog {
+  id           Uuid        @id @default(uuid(7))
+  actorId      Uuid?
+  action       VarChar(64)
+  targetUserId Uuid?
+  createdAt    temporal.createdAt()
+
+  // Deliberately NO foreign keys: audit rows must survive user deletion
+  // (Restrict would block deletes, Cascade would erase the trail).
+
+  @@index([actorId])
+  @@index([targetUserId])
+
+  @@map("audit_log")
 }

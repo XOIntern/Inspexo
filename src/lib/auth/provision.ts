@@ -15,6 +15,7 @@ import type { Varchar } from "@prisma/orm-postgres/target/codec-types";
 import { db } from "@/src/prisma/db";
 
 import { requireAdmin } from "./authorize";
+import { recordAudit } from "./audit";
 import { ProvisionError } from "./errors";
 import {
   ASSIGNABLE_ROLES,
@@ -111,6 +112,7 @@ export async function provisionUser(
   // 6. Credential: system-generated, hashed, returned once.
   const tempPassword = generateTempPassword();
   const passwordHash = await hashPassword(tempPassword);
+  const credentialSetAt = Temporal.Now.instant();
 
   // 7. Atomic create: user + site assignments commit or roll back together.
   const userId = crypto.randomUUID();
@@ -120,6 +122,7 @@ export async function provisionUser(
       email: varchar<255>(input.email),
       name: varchar<255>(input.name),
       passwordHash: varchar<255>(passwordHash),
+      passwordSetAt: credentialSetAt,
       role,
       department: input.department ? varchar<128>(input.department) : null,
       status: input.status,
@@ -130,6 +133,7 @@ export async function provisionUser(
       await tx.orm.public.UserSite.create({ userId, siteId });
     }
   });
+  await recordAudit("user.provisioned", callerId, userId);
 
   return {
     user: {

@@ -13,6 +13,7 @@ import type { Varchar } from "@prisma/orm-postgres/target/codec-types";
 import { db } from "@/src/prisma/db";
 
 import { requireAdmin } from "./authorize";
+import { recordAudit } from "./audit";
 import { ProvisionError } from "./errors";
 import { generateTempPassword, hashPassword } from "./password";
 import {
@@ -24,11 +25,31 @@ import {
   MAX_SITES,
   MIN_SITES,
 } from "./roles";
+import { checkThrottle, recordThrottleFailure } from "./throttle";
 
 const varchar = <N extends number>(value: string) => value as Varchar<N>;
 
 export const IMPORT_MAX_ROWS = 200;
 export const CREDENTIALS_MAX_USERS = 200;
+
+// Batch endpoints are admin-only but unaudited-by-default traffic: bound the
+// per-admin call rate (hashing + mailing budget) separately from login.
+export const BULK_WINDOW_MS = 60 * 60 * 1000;
+export const BULK_MAX_CALLS = 20;
+
+function bulkKey(adminId: string, operation: string): string {
+  return `bulk-${operation}:${adminId}`;
+}
+
+async function checkBulkBudget(adminId: string, operation: string): Promise<void> {
+  const key = bulkKey(adminId, operation);
+  try {
+    await checkThrottle(key, { windowMs: BULK_WINDOW_MS, maxAttempts: BULK_MAX_CALLS });
+  } catch {
+    throw new ProvisionError("RATE_LIMITED", "Too many bulk operations. Try again later.");
+  }
+  await recordThrottleFailure(key, { windowMs: BULK_WINDOW_MS, maxAttempts: BULK_MAX_CALLS });
+}
 
 const rowsSchema = z.array(z.unknown()).min(1).max(IMPORT_MAX_ROWS);
 const userIdsSchema = z.array(z.uuid()).min(1).max(CREDENTIALS_MAX_USERS);
@@ -61,7 +82,8 @@ export type CredentialsResult = {
  * WITHOUT credentials; use generateUserCredentials later to distribute.
  */
 export async function importUsers(adminId: string | null, rawRows: unknown): Promise<ImportResult> {
-  await requireAdmin(adminId);
+  const admin = await requireAdmin(adminId);
+  await checkBulkBudget(admin.id, "import");
   const parsedRows = rowsSchema.safeParse(rawRows);
   if (!parsedRows.success) {
     throw new ProvisionError("INVALID_INPUT", "Invalid import payload.");
@@ -131,6 +153,7 @@ export async function importUsers(adminId: string | null, rawRows: unknown): Pro
         siteIds,
         mustChangePassword: true,
       });
+      await recordAudit("user.imported", admin.id, userId);
     } catch {
       // Narrow window: a concurrent import may have taken the email between
       // the check and the insert. Re-read to report the precise code.
@@ -157,7 +180,8 @@ export async function generateUserCredentials(
   adminId: string | null,
   rawUserIds: unknown,
 ): Promise<CredentialsResult> {
-  await requireAdmin(adminId);
+  const admin = await requireAdmin(adminId);
+  await checkBulkBudget(admin.id, "credentials");
   const parsed = userIdsSchema.safeParse(rawUserIds);
   if (!parsed.success) {
     throw new ProvisionError("INVALID_INPUT", "Invalid user list.");
@@ -180,9 +204,11 @@ export async function generateUserCredentials(
     const passwordHash = await hashPassword(tempPassword);
     await db.orm.public.User.where({ id: userId }).update({
       passwordHash: varchar<255>(passwordHash),
+      passwordSetAt: Temporal.Now.instant(),
       mustChangePassword: true,
     });
     credentials.push({ userId, email: target.email, tempPassword });
+    await recordAudit("credentials.generated", admin.id, userId);
   }
 
   return { credentials, failed };

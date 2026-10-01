@@ -30,7 +30,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Invalid request." }, { status: 422 });
   }
   try {
-    const user = await authenticate(parsed.data.email, parsed.data.password);
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
+    const user = await authenticate(parsed.data.email, parsed.data.password, { clientIp });
     const { token } = await createSession(user.id);
     const res = NextResponse.json({
       user: {

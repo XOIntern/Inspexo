@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'484090d9066252fcdc71c5c43edff77e86daaab9b2cee8560fad4001c5af12ec'>;
+  StorageHashBase<'a90e539a9f2bc95dd4339ef0bf1da7eefdebab97cfa9ee95eaf6feb588d3caf9'>;
 export type ExecutionHash =
-  ExecutionHashBase<'00e573346f9ba31ed81898ed59b67db676bf6e1b43a2fe13cb455be119c6d9d3'>;
+  ExecutionHashBase<'0df2b7fa86a5b9d13d8527a26c0945fc819c6f28eab4b220182fa04cb7860100'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -250,6 +250,13 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
 
 export type FieldOutputTypes = {
   readonly public: {
+    readonly AuditLog: {
+      readonly action: Varchar<64>;
+      readonly actorId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly targetUserId: CodecTypes['pg/uuid@1']['output'] | null;
+    };
     readonly AuthThrottle: {
       readonly attempts: CodecTypes['pg/int4@1']['output'];
       readonly key: Varchar<128>;
@@ -287,6 +294,7 @@ export type FieldOutputTypes = {
       readonly mustChangePassword: CodecTypes['pg/bool@1']['output'];
       readonly name: Varchar<255>;
       readonly passwordHash: Varchar<255> | null;
+      readonly passwordSetAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly role: CodecTypes['pg/text@1']['output'];
       readonly status: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -300,6 +308,13 @@ export type FieldOutputTypes = {
 };
 export type FieldInputTypes = {
   readonly public: {
+    readonly AuditLog: {
+      readonly action: CodecTypes['sql/varchar@1']['input'];
+      readonly actorId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly targetUserId: CodecTypes['pg/uuid@1']['input'] | null;
+    };
     readonly AuthThrottle: {
       readonly attempts: CodecTypes['pg/int4@1']['input'];
       readonly key: CodecTypes['sql/varchar@1']['input'];
@@ -337,6 +352,7 @@ export type FieldInputTypes = {
       readonly mustChangePassword: CodecTypes['pg/bool@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly passwordHash: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly passwordSetAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly role: CodecTypes['pg/text@1']['input'];
       readonly status: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -350,6 +366,13 @@ export type FieldInputTypes = {
 };
 export type StorageColumnTypes = {
   readonly public: {
+    readonly audit_log: {
+      readonly action: Varchar<64>;
+      readonly actorId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly targetUserId: CodecTypes['pg/uuid@1']['output'] | null;
+    };
     readonly auth_throttle: {
       readonly attempts: CodecTypes['pg/int4@1']['output'];
       readonly key: Varchar<128>;
@@ -387,6 +410,7 @@ export type StorageColumnTypes = {
       readonly mustChangePassword: CodecTypes['pg/bool@1']['output'];
       readonly name: Varchar<255>;
       readonly passwordHash: Varchar<255> | null;
+      readonly passwordSetAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly role: CodecTypes['pg/text@1']['output'];
       readonly status: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -400,6 +424,13 @@ export type StorageColumnTypes = {
 };
 export type StorageColumnInputTypes = {
   readonly public: {
+    readonly audit_log: {
+      readonly action: CodecTypes['sql/varchar@1']['input'];
+      readonly actorId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly targetUserId: CodecTypes['pg/uuid@1']['input'] | null;
+    };
     readonly auth_throttle: {
       readonly attempts: CodecTypes['pg/int4@1']['input'];
       readonly key: CodecTypes['sql/varchar@1']['input'];
@@ -437,6 +468,7 @@ export type StorageColumnInputTypes = {
       readonly mustChangePassword: CodecTypes['pg/bool@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly passwordHash: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly passwordSetAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly role: CodecTypes['pg/text@1']['input'];
       readonly status: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -450,6 +482,14 @@ export type StorageColumnInputTypes = {
 };
 
 export namespace Models {
+  export type public_AuditLog = {
+    action: Varchar<64>;
+    actorId: CodecTypes['pg/uuid@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/uuid@1']['output'];
+    targetUserId: CodecTypes['pg/uuid@1']['output'] | null;
+    readonly [RelationKeys]?: never;
+  };
   export type public_AuthThrottle = {
     attempts: CodecTypes['pg/int4@1']['output'];
     key: Varchar<128>;
@@ -494,6 +534,7 @@ export namespace Models {
     mustChangePassword: CodecTypes['pg/bool@1']['output'];
     name: Varchar<255>;
     passwordHash: Varchar<255> | null;
+    passwordSetAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     role: CodecTypes['pg/text@1']['output'];
     status: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -514,6 +555,7 @@ export namespace Models {
 
 export declare const models: {
   public: {
+    AuditLog: Models.public_AuditLog;
     AuthThrottle: Models.public_AuthThrottle;
     EmailVerificationToken: Models.public_EmailVerificationToken;
     Session: Models.public_Session;
@@ -541,6 +583,53 @@ type ContractBase = Omit<
         readonly kind: 'postgres-schema';
         readonly entries: {
           readonly table: {
+            readonly audit_log: {
+              columns: {
+                readonly action: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 64 };
+                };
+                readonly actorId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly targetUserId: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'audit_log_actorId_idx_a58f6b4b';
+                  readonly prefix: 'audit_log_actorId_idx';
+                  readonly columns: readonly ['actorId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'audit_log_targetUserId_idx_e0d638f0';
+                  readonly prefix: 'audit_log_targetUserId_idx';
+                  readonly columns: readonly ['targetUserId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
+            };
             readonly auth_throttle: {
               columns: {
                 readonly attempts: {
@@ -777,6 +866,11 @@ type ContractBase = Omit<
                   readonly nullable: true;
                   readonly typeParams: { readonly length: 255 };
                 };
+                readonly passwordSetAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
                 readonly role: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -881,6 +975,7 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
+    readonly audit_log: { readonly namespace: 'public' & NamespaceId; readonly model: 'AuditLog' };
     readonly auth_throttle: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'AuthThrottle';
@@ -898,6 +993,49 @@ type ContractBase = Omit<
     readonly namespaces: {
       readonly public: {
         readonly models: {
+          readonly AuditLog: {
+            readonly fields: {
+              readonly action: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 64 };
+                };
+              };
+              readonly actorId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly targetUserId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'audit_log';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly action: { readonly column: 'action' };
+                readonly actorId: { readonly column: 'actorId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly targetUserId: { readonly column: 'targetUserId' };
+              };
+            };
+          };
           readonly AuthThrottle: {
             readonly fields: {
               readonly attempts: {
@@ -1177,6 +1315,13 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly length: 255 };
                 };
               };
+              readonly passwordSetAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
               readonly role: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -1240,6 +1385,7 @@ type ContractBase = Omit<
                 readonly mustChangePassword: { readonly column: 'mustChangePassword' };
                 readonly name: { readonly column: 'name' };
                 readonly passwordHash: { readonly column: 'passwordHash' };
+                readonly passwordSetAt: { readonly column: 'passwordSetAt' };
                 readonly role: { readonly column: 'role' };
                 readonly status: { readonly column: 'status' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
@@ -1323,6 +1469,22 @@ type ContractBase = Omit<
     readonly executionHash: ExecutionHash;
     readonly mutations: {
       readonly defaults: readonly [
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly column: 'createdAt';
+            readonly namespace: 'public';
+            readonly table: 'audit_log';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv7'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly column: 'id';
+            readonly namespace: 'public';
+            readonly table: 'audit_log';
+          };
+        },
         {
           readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {

@@ -28,6 +28,12 @@ export const VERIFICATION_EXPIRY_HOURS = 24;
 export const RESEND_WINDOW_MS = 15 * 60 * 1000;
 export const RESEND_MAX_ATTEMPTS = 3;
 
+// Anonymous redemptions carry no identity, so per-account throttling is
+// impossible. A generous per-network budget bounds blind flood traffic
+// without ever blocking legitimate use (real users redeem once).
+export const VERIFY_WINDOW_MS = 15 * 60 * 1000;
+export const VERIFY_MAX_ATTEMPTS = 100;
+
 /** Future page path for the link. No UI is built in this phase. */
 export const VERIFY_PAGE_PATH = "/auth/verify-email";
 
@@ -92,7 +98,17 @@ export async function issueVerificationToken(userId: string): Promise<IssuedToke
  * emailVerifiedAt commit atomically; the concurrent-double-click race is
  * benign (both writes converge on the same verified state).
  */
-export async function consumeVerificationToken(rawToken: string): Promise<{ userId: string }> {
+export async function consumeVerificationToken(
+  rawToken: string,
+  opts?: { clientIp?: string | null },
+): Promise<{ userId: string }> {
+  const ipKey = `verify-ip:${createHash("sha256").update(opts?.clientIp ?? "direct").digest("hex")}`;
+  try {
+    await checkThrottle(ipKey, { windowMs: VERIFY_WINDOW_MS, maxAttempts: VERIFY_MAX_ATTEMPTS });
+  } catch {
+    throw new VerificationError("RATE_LIMITED", "Too many attempts. Try again later.");
+  }
+  await recordThrottleFailure(ipKey, { windowMs: VERIFY_WINDOW_MS, maxAttempts: VERIFY_MAX_ATTEMPTS });
   if (typeof rawToken !== "string" || rawToken.length === 0 || rawToken.length > 256) {
     throw new VerificationError("INVALID_TOKEN", GENERIC_VERIFICATION_MESSAGE);
   }

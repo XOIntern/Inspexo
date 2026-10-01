@@ -21,6 +21,7 @@ const PROVISION_STATUS: Record<ProvisionErrorCode, number> = {
   USER_NOT_FOUND: 404,
   SELF_DEACTIVATION: 422,
   SELF_ROLE_CHANGE: 422,
+  RATE_LIMITED: 429,
 };
 
 export function authErrorResponse(error: AuthError): NextResponse {

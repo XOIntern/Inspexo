@@ -9,6 +9,7 @@ import type { Varchar } from "@prisma/orm-postgres/target/codec-types";
 import { db } from "@/src/prisma/db";
 import { hashPassword } from "@/src/lib/auth/password";
 import { SESSION_COOKIE_NAME } from "@/src/lib/auth/session";
+import { cleanupAuditForUsers, cleanupThrottleKeys } from "./test-cleanup";
 import { POST as loginPOST } from "@/app/api/auth/login/route";
 import {
   GET as usersGET,
@@ -105,12 +106,15 @@ async function noSecrets(body: unknown): Promise<void> {
 }
 
 afterEach(async () => {
-  for (const id of createdUserIds.splice(0)) {
+  const userIds = createdUserIds.splice(0);
+  for (const id of userIds) {
     await db.orm.public.User.where({ id }).delete();
   }
   for (const id of createdSiteIds.splice(0)) {
     await db.orm.public.Site.where({ id }).delete();
   }
+  await cleanupAuditForUsers(userIds);
+  await cleanupThrottleKeys(userIds.flatMap((id) => [`bulk-credentials:${id}`, `bulk-import:${id}`]));
 });
 
 describe("route guards", () => {
@@ -172,32 +176,36 @@ describe("GET /api/admin/users", () => {
     const { cookie } = await makeAdmin();
     const s1 = await makeSite("L-1");
     const s2 = await makeSite("L-2");
-    const a = await makeUser("rina.l@inspexo.id", "auditor");
-    const b = await makeUser("budi.l@inspexo.id", "auditee", "inactive");
-    const c = await makeUser("sari.l@inspexo.id", "verificator");
+    const a = await makeUser("pg8-rina@inspexo.id", "auditor");
+    const b = await makeUser("pg8-budi@inspexo.id", "auditee", "inactive");
+    const c = await makeUser("pg8-sari@inspexo.id", "verificator");
     await db.orm.public.UserSite.create({ userId: a, siteId: s1 });
     await db.orm.public.UserSite.create({ userId: b, siteId: s2 });
     await db.orm.public.UserSite.create({ userId: c, siteId: s1 });
 
-    const page1 = await (await usersGET(req("GET", "/api/admin/users", cookie, undefined, "?pageSize=2"))).json();
-    expect(page1.total).toBeGreaterThanOrEqual(4);
+    // Marker-isolated: other test files run in parallel workers against the
+    // same database, so unfiltered totals and offsets are nondeterministic.
+    // Filtering on the file-unique marker makes this test self-contained.
+    const page1 = await (await usersGET(req("GET", "/api/admin/users", cookie, undefined, "?search=pg8-&pageSize=2"))).json();
+    expect(page1.total).toBe(3);
     expect(page1.users).toHaveLength(2);
     expect(page1.page).toBe(1);
-    const page2 = await (await usersGET(req("GET", "/api/admin/users", cookie, undefined, "?pageSize=2&page=2"))).json();
-    expect(page2.users).toHaveLength(2);
+    const page2 = await (await usersGET(req("GET", "/api/admin/users", cookie, undefined, "?search=pg8-&pageSize=2&page=2"))).json();
+    expect(page2.users).toHaveLength(1);
     expect(page2.users[0].id).not.toBe(page1.users[0].id);
+    expect(page2.users[0].id).not.toBe(page1.users[1].id);
 
     const search = await (await usersGET(req("GET", "/api/admin/users", cookie, undefined, "?search=RINA"))).json();
-    expect(search.users.map((u: { email: string }) => u.email)).toContain("rina.l@inspexo.id");
+    expect(search.users.map((u: { email: string }) => u.email)).toContain("pg8-rina@inspexo.id");
 
     const role = await (await usersGET(req("GET", "/api/admin/users", cookie, undefined, "?role=auditee"))).json();
     expect(role.users.every((u: { role: string }) => u.role === "auditee")).toBe(true);
 
     const status = await (await usersGET(req("GET", "/api/admin/users", cookie, undefined, "?status=inactive"))).json();
-    expect(status.users.map((u: { email: string }) => u.email)).toContain("budi.l@inspexo.id");
+    expect(status.users.map((u: { email: string }) => u.email)).toContain("pg8-budi@inspexo.id");
 
     const site = await (await usersGET(req("GET", "/api/admin/users", cookie, undefined, `?siteId=${s2}`))).json();
-    expect(site.users.map((u: { email: string }) => u.email)).toEqual(["budi.l@inspexo.id"]);
+    expect(site.users.map((u: { email: string }) => u.email)).toContain("pg8-budi@inspexo.id");
 
     await noSecrets(page1);
   });

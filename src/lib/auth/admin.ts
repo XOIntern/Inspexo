@@ -7,10 +7,12 @@
 // either would orphan administration with direct-DB access as the only
 // recovery. Role "admin" is never assignable (see provision.ts policy).
 import { z } from "zod";
+import type { Varchar } from "@prisma/orm-postgres/target/codec-types";
 
 import { db } from "@/src/prisma/db";
 
 import { requireAdmin } from "./authorize";
+import { recordAudit } from "./audit";
 import { ProvisionError } from "./errors";
 import {
   ASSIGNABLE_ROLES,
@@ -23,6 +25,8 @@ import {
 const roleSchema = z.enum(ASSIGNABLE_ROLES);
 const statusSchema = z.enum(["active", "inactive", "suspended"]);
 const siteIdsSchema = z.array(z.uuid());
+
+const varchar = <N extends number>(value: string) => value as Varchar<N>;
 
 async function requireTargetUser(userId: string): Promise<{ id: string; role: string }> {
   const target = await db.orm.public.User.where({ id: userId }).first();
@@ -83,6 +87,7 @@ export async function updateUserRole(
     assignments.map((a) => a.siteId),
   );
   await db.orm.public.User.where({ id: userId }).update({ role });
+  await recordAudit("user.role_changed", admin.id, userId);
   return { id: userId, role };
 }
 
@@ -95,9 +100,8 @@ export async function updateUserSites(
   userId: string,
   rawSiteIds: unknown,
 ): Promise<{ id: string; siteIds: string[] }> {
-  await requireAdmin(adminId);
-  const target = await requireTargetUser(userId);
-  const parsed = siteIdsSchema.safeParse(rawSiteIds);
+  const admin = await requireAdmin(adminId);
+  const target = await requireTargetUser(userId);  const parsed = siteIdsSchema.safeParse(rawSiteIds);
   if (!parsed.success) {
     throw new ProvisionError("INVALID_INPUT", "Invalid site assignment.", parsed.error.flatten());
   }
@@ -126,13 +130,14 @@ export async function updateUserSites(
       await tx.orm.public.UserSite.create({ userId, siteId });
     }
   });
+  await recordAudit("user.sites_changed", adminId, userId);
   return { id: userId, siteIds };
 }
 
 /**
- * Activate or deactivate a user. Deactivation takes effect on the next
- * request (sessions re-read the row); existing sessions are NOT revoked
- * here — revocation sweeps belong to a session-management pass.
+ * Activate or deactivate a user. Deactivation revokes all of the user's
+ * sessions in the same transaction, so access ends immediately — not on the
+ * next request.
  */
 export async function setUserStatus(
   adminId: string | null,
@@ -151,6 +156,77 @@ export async function setUserStatus(
     );
   }
   await requireTargetUser(userId);
-  await db.orm.public.User.where({ id: userId }).update({ status: parsed.data });
+  await db.transaction(async (tx) => {
+    await tx.orm.public.User.where({ id: userId }).update({ status: parsed.data });
+    if (parsed.data !== "active") {
+      const sessions = await tx.orm.public.Session.where({ userId }).all();
+      const now = Temporal.Now.instant();
+      for (const session of sessions) {
+        if (session.revokedAt === null) {
+          await tx.orm.public.Session.where({ id: session.id }).update({ revokedAt: now });
+        }
+      }
+    }
+  });
+  await recordAudit("user.status_changed", admin.id, userId);
   return { id: userId, status: parsed.data };
+}
+
+const contactSchema = z.object({
+  name: z.string().trim().min(1).max(255).optional(),
+  email: z.string().trim().toLowerCase().pipe(z.email().max(255)).optional(),
+});
+
+/**
+ * Change a user's name and/or email. An email change resets verification
+ * (emailVerifiedAt → null) and kills live verification tokens — otherwise a
+ * new, unverified address would inherit the old address's verified state.
+ */
+export async function updateUserContact(
+  adminId: string | null,
+  userId: string,
+  rawContact: unknown,
+): Promise<{ id: string; name: string; email: string; emailVerified: boolean }> {
+  const admin = await requireAdmin(adminId);
+  const parsed = contactSchema.safeParse(rawContact);
+  if (!parsed.success || (parsed.data.name === undefined && parsed.data.email === undefined)) {
+    throw new ProvisionError("INVALID_INPUT", "Invalid contact data.");
+  }
+  const target = await db.orm.public.User.where({ id: userId }).first();
+  if (target === null) {
+    throw new ProvisionError("USER_NOT_FOUND", "User does not exist.");
+  }
+  const name: string = parsed.data.name ?? target.name;
+  let email: string = target.email;
+  let emailVerified = target.emailVerifiedAt !== null;
+  if (parsed.data.email !== undefined && parsed.data.email !== target.email) {
+    const clash = await db.orm.public.User.where({
+      email: varchar<255>(parsed.data.email),
+    }).first();
+    if (clash !== null) {
+      throw new ProvisionError("DUPLICATE_EMAIL", "Email is already registered.");
+    }
+    email = parsed.data.email;
+    emailVerified = false;
+  }
+  await db.transaction(async (tx) => {
+    await tx.orm.public.User.where({ id: userId }).update({
+      name: varchar<255>(name),
+      email: varchar<255>(email),
+      ...(emailVerified ? {} : { emailVerifiedAt: null }),
+    });
+    if (!emailVerified) {
+      const live = await tx.orm.public.EmailVerificationToken.where({ userId }).all();
+      const now = Temporal.Now.instant();
+      for (const row of live) {
+        if (row.usedAt === null) {
+          await tx.orm.public.EmailVerificationToken.where({ id: row.id }).update({
+            usedAt: now,
+          });
+        }
+      }
+    }
+  });
+  await recordAudit("user.contact_changed", admin.id, userId);
+  return { id: userId, name, email, emailVerified };
 }

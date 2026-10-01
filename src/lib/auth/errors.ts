@@ -15,6 +15,7 @@ export const PROVISION_ERROR_CODES = [
   "USER_NOT_FOUND", // admin target does not exist — maps to 404
   "SELF_DEACTIVATION", // admin deactivating their own account — rejected
   "SELF_ROLE_CHANGE", // admin changing their own role — rejected
+  "RATE_LIMITED", // bulk-operation budget exhausted — maps to 429
 ] as const;
 
 export type ProvisionErrorCode = (typeof PROVISION_ERROR_CODES)[number];

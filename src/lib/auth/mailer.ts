@@ -32,12 +32,20 @@ export class ResendMailer implements Mailer {
       throw new Error("RESEND_API_KEY is not configured.");
     }
     const resend = new Resend(apiKey);
-    const { data, error } = await resend.emails.send({
+    // A hung provider must not hang the route: race the send against a
+    // 10 s timeout (the SDK's options carry no abort signal).
+    const send = resend.emails.send({
       from: VERIFICATION_SENDER,
       to,
       subject: "Verify your InspeXO email address",
       text: `Verify your email address by opening this link (valid 24 hours, single use):\n\n${link}\n\nIf you did not expect this email, ignore it.`,
     });
+    const { data, error } = await Promise.race([
+      send,
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Verification email timed out.")), 10_000),
+      ),
+    ]);
     if (error || !data) {
       throw new Error(`Verification email was not accepted: ${error?.message ?? "unknown error"}.`);
     }

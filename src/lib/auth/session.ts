@@ -39,6 +39,16 @@ export const SESSION_ISSUER = "inspexo";
 export const SESSION_LIFETIME_SECONDS = 8 * 60 * 60;
 export const SESSION_COOKIE_NAME = "__Host-inspexo_session";
 
+// Temporary credentials die 72 h after issuance when still unrotated. The
+// rejection is the generic 401 (never a distinct code — that would confirm
+// the account exists to strangers); recovery is a fresh credential from an
+// admin. passwordSetAt is stamped everywhere a hash is written.
+export const TEMP_PASSWORD_MAX_AGE_HOURS = 72;
+
+// Cap of concurrent active sessions per user; oldest beyond the cap are
+// revoked at login so a forgotten device does not stay valid forever.
+export const MAX_ACTIVE_SESSIONS = 10;
+
 export const GENERIC_CREDENTIALS_MESSAGE = "Invalid email or password.";
 export const GENERIC_SESSION_MESSAGE = "Authentication required.";
 
@@ -162,11 +172,28 @@ export async function createSession(userId: string): Promise<{ token: string; jt
   });
   try {
     const now = Temporal.Now.instant();
-    const expired = await db.orm.public.Session.where((s) => s.userId.eq(userId)).all();
-    for (const row of expired) {
+    const sessions = await db.orm.public.Session.where((s) => s.userId.eq(userId)).all();
+    // Delete rows that already expired.
+    for (const row of sessions) {
       if (row.expiresAt.epochMilliseconds <= now.epochMilliseconds && row.jti !== jti) {
         await db.orm.public.Session.where({ jti: row.jti }).delete();
       }
+    }
+    // Cap concurrent sessions: revoke the oldest beyond the cap so a
+    // forgotten device does not stay valid for the full 8 h window.
+    const active = sessions
+      .filter(
+        (row) =>
+          row.jti !== jti &&
+          row.revokedAt === null &&
+          row.expiresAt.epochMilliseconds > now.epochMilliseconds,
+      )
+      .sort((a, b) => a.expiresAt.epochMilliseconds - b.expiresAt.epochMilliseconds);
+    const excess = active.length + 1 - MAX_ACTIVE_SESSIONS;
+    for (let i = 0; i < excess; i++) {
+      await db.orm.public.Session.where({ jti: active[i]!.jti }).update({
+        revokedAt: now,
+      });
     }
   } catch {
     // Pruning must never fail a login.
@@ -176,14 +203,24 @@ export async function createSession(userId: string): Promise<{ token: string; jt
 
 /**
  * Authenticate by email + password. Unknown email, wrong password, null hash,
- * and inactive status ALL collapse to one generic 401 with comparable timing:
- * the miss path always runs a full Argon2id verify.
+ * expired temporary credential, and inactive status ALL collapse to one
+ * generic 401 with comparable timing: the miss path always runs a full
+ * Argon2id verify.
+ *
+ * Throttling is keyed by email AND client network identity so one attacker's
+ * failures cannot lock a victim out from their own network. X-Forwarded-For
+ * is spoofable, so this is a mitigation, not a boundary: treat a shared or
+ * forged IP as acceptable throttle-key collision, never as identity.
  */
-export async function authenticate(rawEmail: unknown, rawPassword: unknown): Promise<PublicUser> {
+export async function authenticate(
+  rawEmail: unknown,
+  rawPassword: unknown,
+  opts?: { clientIp?: string | null },
+): Promise<PublicUser> {
   const email =
     typeof rawEmail === "string" ? rawEmail.trim().toLowerCase().slice(0, 255) : "";
   const password = typeof rawPassword === "string" ? rawPassword : "";
-  const key = throttleKey(email);
+  const key = throttleKey(email, opts?.clientIp ?? null);
   await checkThrottle(key);
 
   const fail = async (): Promise<never> => {
@@ -198,10 +235,16 @@ export async function authenticate(rawEmail: unknown, rawPassword: unknown): Pro
     throw new AuthError("INVALID_CREDENTIALS", GENERIC_CREDENTIALS_MESSAGE);
   }
 
+  if (password.length > PASSWORD_MAX_LENGTH) {
+    // Overlong input never reaches Argon2 (CPU-burn vector). The fast
+    // rejection applies identically whether or not the account exists.
+    return fail();
+  }
+
   const row = await db.orm.public.User.where({ email: varchar<255>(email) }).first();
 
   let passwordOk = false;
-  if (row?.passwordHash && password.length <= PASSWORD_MAX_LENGTH) {
+  if (row?.passwordHash) {
     try {
       passwordOk = await verifyPassword(row.passwordHash, password);
     } catch {
@@ -213,6 +256,11 @@ export async function authenticate(rawEmail: unknown, rawPassword: unknown): Pro
   if (!passwordOk || row === null || row.status !== "active") {
     return fail();
   }
+  if (isTempCredentialExpired(row.mustChangePassword, row.passwordSetAt)) {
+    // Deliberately the same generic 401: a distinct code would confirm the
+    // account exists. Recovery is a fresh credential from an admin.
+    return fail();
+  }
 
   await clearThrottle(key);
   const user = await toPublicUser(row.id);
@@ -220,6 +268,16 @@ export async function authenticate(rawEmail: unknown, rawPassword: unknown): Pro
     return fail();
   }
   return user;
+}
+
+/** A still-unrotated temporary credential dies 72 h after issuance. */
+export function isTempCredentialExpired(
+  mustChangePassword: boolean,
+  passwordSetAt: Temporal.Instant | null,
+): boolean {
+  if (!mustChangePassword || passwordSetAt === null) return false;
+  const ageMs = Temporal.Now.instant().epochMilliseconds - passwordSetAt.epochMilliseconds;
+  return ageMs >= TEMP_PASSWORD_MAX_AGE_HOURS * 60 * 60 * 1000;
 }
 
 /** Revoke the session behind a token. Never throws — logout is idempotent. */

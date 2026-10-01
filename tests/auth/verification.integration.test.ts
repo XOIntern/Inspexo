@@ -3,10 +3,12 @@
 // touched: services take a fake mailer, and the resend route's mailer module
 // is mocked.
 import { NextRequest } from "next/server";
+import { createHash } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Varchar } from "@prisma/orm-postgres/target/codec-types";
 
 import { db } from "@/src/prisma/db";
+import { cleanupThrottleKeys } from "./test-cleanup";
 import { hashPassword } from "@/src/lib/auth/password";
 import {
   SESSION_COOKIE_NAME,
@@ -92,6 +94,10 @@ afterEach(async () => {
     const row = await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).first();
     if (row !== null) await db.orm.public.AuthThrottle.where({ key: varchar<128>(key) }).delete();
   }
+  // Verify-route calls without an X-Forwarded-For header share one key.
+  await cleanupThrottleKeys([
+    `verify-ip:${createHash("sha256").update("direct").digest("hex")}`,
+  ]);
 });
 
 describe("issue and consume", () => {

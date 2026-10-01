@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Varchar } from "@prisma/orm-postgres/target/codec-types";
 
 import { db } from "@/src/prisma/db";
+import { cleanupAuditForUsers } from "./test-cleanup";
 import { ProvisionError } from "@/src/lib/auth/errors";
 import { provisionUser } from "@/src/lib/auth/provision";
 
@@ -65,12 +66,14 @@ beforeEach(async () => {
 
 afterEach(async () => {
   // Users first: delete cascades UserSite / tokens / sessions.
-  for (const id of createdUserIds) {
+  const userIds = createdUserIds.splice(0);
+  for (const id of userIds) {
     await db.orm.public.User.where({ id }).delete();
   }
-  for (const id of createdSiteIds) {
+  for (const id of createdSiteIds.splice(0)) {
     await db.orm.public.Site.where({ id }).delete();
   }
+  await cleanupAuditForUsers(userIds);
 });
 
 describe("happy paths", () => {

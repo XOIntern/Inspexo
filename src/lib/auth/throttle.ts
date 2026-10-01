@@ -17,8 +17,8 @@ const varchar = <N extends number>(value: string) => value as Varchar<N>;
 export const THROTTLE_WINDOW_MS = 15 * 60 * 1000;
 export const THROTTLE_MAX_ATTEMPTS = 5;
 
-export function throttleKey(email: string): string {
-  return createHash("sha256").update(email).digest("hex");
+export function throttleKey(email: string, clientIp: string | null = null): string {
+  return createHash("sha256").update(`${email}|${clientIp ?? "direct"}`).digest("hex");
 }
 
 export type ThrottlePolicy = {

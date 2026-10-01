@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Varchar } from "@prisma/orm-postgres/target/codec-types";
 
 import { db } from "@/src/prisma/db";
+import { cleanupAuditForUsers } from "./test-cleanup";
 import {
   setUserStatus,
   updateUserRole,
@@ -84,12 +85,14 @@ async function expectDenied(promise: Promise<unknown>, code: string): Promise<vo
 
 afterEach(async () => {
   store.token = null;
-  for (const id of createdUserIds.splice(0)) {
+  const userIds = createdUserIds.splice(0);
+  for (const id of userIds) {
     await db.orm.public.User.where({ id }).delete();
   }
   for (const id of createdSiteIds.splice(0)) {
     await db.orm.public.Site.where({ id }).delete();
   }
+  await cleanupAuditForUsers(userIds);
 });
 
 describe("updateUserRole", () => {

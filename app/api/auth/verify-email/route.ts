@@ -24,7 +24,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Invalid request." }, { status: 422 });
   }
   try {
-    await consumeVerificationToken(parsed.data.token);
+    await consumeVerificationToken(parsed.data.token, {
+      clientIp: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
+    });
     return NextResponse.json({ verified: true });
   } catch (error) {
     if (error instanceof VerificationError) {

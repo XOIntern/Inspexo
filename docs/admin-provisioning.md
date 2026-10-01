@@ -31,11 +31,22 @@ fails fast at first login when the variable is missing or malformed.
 - Unverified emails are **not** blocked: login succeeds with
   `emailVerified: false` and the dashboard shows a verification notice.
 - The session lives in an `HttpOnly` + `Secure` + `SameSite=Lax` cookie
-  (`__Host-inspexo_session`, 8 h). `POST /api/auth/logout` revokes the
+  (`__Host-inspexo_session`, 8 h). `Secure` is unconditional: non-localhost
+  plain-HTTP access (e.g. LAN-IP testing) will silently lose sessions — use
+  localhost or HTTPS. `POST /api/auth/logout` revokes the
   server-side session and clears the cookie; `GET /api/auth/session`
   returns the current user or 401.
-- Failed logins are throttled per email (5 per 15 min → `429`); a success
-  resets the window.
+- Failed logins are throttled per email + client network (5 per 15 min →
+  `429`); a success resets the window. The IP half is spoofable, so this
+  bounds opportunistic attacks but is not a boundary against a determined
+  one sharing the victim's egress.
+- Temporary credentials expire 72 h after issuance while still unrotated
+  (generic 401 afterwards; recovery is a fresh credential from an admin).
+  `POST /api/auth/change-password` rotates the secret, clears the
+  must-change flag, and revokes all other sessions.
+- There is no PASETO key-rotation procedure: rotating `PASETO_SESSION_KEY`
+  is a global logout (all sessions die at once). Acceptable; plan rotation
+  as a maintenance action, not an incident response.
 
 ## Bootstrapping the first admin (manual, one-time)
 
@@ -78,10 +89,13 @@ Recovery is direct database access only (`UPDATE public."user" SET status =
 'active' …` or inserting a replacement admin per above). There is no
 self-service recovery by design.
 
-## Known open hole (until login lands)
+## Known open hole — CLOSED
 
-`app/dashboard/users/actions.ts` (`createUser`/`updateUser`) writes users with
-no caller check, a `"-"` password placeholder, and no site assignment. It is
-deliberately untouched (owned by another person) and must delegate to
-`provisionUser()` with a session-derived caller once login/PASETO exists.
-Do not expose it beyond the local dev dashboard before then.
+`app/dashboard/users/actions.ts` previously wrote users with no caller
+check, a `"-"` password placeholder, and no site assignment. It now
+authenticates via `requireUser()` and delegates to `provisionUser` /
+`updateUserContact` / `updateUserRole` / `setUserStatus`, so the backend
+rules (admin-only, validated roles/sites/status, verification reset on
+email change) apply identically. The dialog still collects no site picker:
+creating a site-scoped role without `siteIds` is rejected (422) until the
+Admin Dashboard supplies them.
