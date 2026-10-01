@@ -25,11 +25,13 @@ business roles never acquire administrative power.
 
 ## Permission — code, not data
 
-Capabilities are derived from roles in code. There is deliberately **no**
-permissions table and no role-permission join: a database edit must never
-grant capability nobody reviewed. The HSE permission vocabulary itself
-(`finding.*`, `audit.*`, …) is domain logic and lives with the domain —
-this layer only provides the `requireRole` hook it plugs into.
+Capabilities are derived from roles in `permissions.ts`, where review
+happens. There is deliberately **no** permissions table: a database edit
+must never grant capability nobody reviewed. The map is a minimal coarse
+vocabulary (`user.manage`, `audit.conduct`, `inspection.daily`, …);
+the HSE domain extends it when its features land — adding a verb is a code
+change, which is the point. `requirePermission(user, perm)` enforces it
+(403 `FORBIDDEN_PERMISSION`); unknown roles hold zero permissions.
 
 ## Site scope — join rows, the only source
 

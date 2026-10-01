@@ -12,6 +12,9 @@ export const PROVISION_ERROR_CODES = [
   "DUPLICATE_EMAIL", // incl. case-variant — maps to 409, generic message
   "UNKNOWN_SITE", // siteId does not exist — maps to 422
   "SITE_CARDINALITY", // violates MIN/MAX_SITES for the role — maps to 422
+  "USER_NOT_FOUND", // admin target does not exist — maps to 404
+  "SELF_DEACTIVATION", // admin deactivating their own account — rejected
+  "SELF_ROLE_CHANGE", // admin changing their own role — rejected
 ] as const;
 
 export type ProvisionErrorCode = (typeof PROVISION_ERROR_CODES)[number];
@@ -60,6 +63,7 @@ export const AUTH_ERROR_CODES = [
   "RATE_LIMITED", // throttle exhausted — 429
   "FORBIDDEN_ROLE", // authenticated but role not allowed — 403 (identity proven)
   "FORBIDDEN_SITE", // authenticated but no site assignment — 403 (identity proven)
+  "FORBIDDEN_PERMISSION", // authenticated but permission absent — 403 (identity proven)
 ] as const;
 
 export type AuthErrorCode = (typeof AUTH_ERROR_CODES)[number];
@@ -71,6 +75,7 @@ const AUTH_ERROR_STATUS: Record<AuthErrorCode, 401 | 403 | 429> = {
   RATE_LIMITED: 429,
   FORBIDDEN_ROLE: 403,
   FORBIDDEN_SITE: 403,
+  FORBIDDEN_PERMISSION: 403,
 };
 
 /** Authentication/session failure. Messages are safe to send to clients. */

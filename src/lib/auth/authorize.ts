@@ -21,6 +21,7 @@
 import { db } from "@/src/prisma/db";
 
 import { AuthError, ProvisionError } from "./errors";
+import { hasPermission, type Permission } from "./permissions";
 import type { PublicUser } from "./session";
 
 export type AdminCaller = {
@@ -64,15 +65,36 @@ export function requireRole(user: PublicUser, ...allowed: string[]): PublicUser 
 /**
  * Require a UserSite row for (user, site). One indexed existence check for
  * every role — the auditee single-site restriction falls out of the data
- * (exactly one row exists) with no role branch in the path.
+ * (exactly one row exists) with no role branch in the path. Request-supplied
+ * site IDs are never trusted: malformed IDs are denied without touching the
+ * database, and only a matching row grants access, so forged or guessed
+ * UUIDs are denied by the lookup itself.
  */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function requireSiteAccess(user: PublicUser, siteId: string): Promise<PublicUser> {
+  if (!UUID_RE.test(siteId)) {
+    throw new AuthError("FORBIDDEN_SITE", "Site access denied.");
+  }
   const assignment = await db.orm.public.UserSite.where({
     userId: user.id,
     siteId,
   }).first();
   if (assignment === null) {
     throw new AuthError("FORBIDDEN_SITE", "Site access denied.");
+  }
+  return user;
+}
+
+/**
+ * Require a permission derived from the user's role (see permissions.ts).
+ * Role comes from the already-loaded user, never from token claims or
+ * request input — callers cannot bypass the check by calling lower layers
+ * directly, because capability lives in this map, not in anything they send.
+ */
+export function requirePermission(user: PublicUser, permission: Permission): PublicUser {
+  if (!hasPermission(user.role, permission)) {
+    throw new AuthError("FORBIDDEN_PERMISSION", "Insufficient permission.");
   }
   return user;
 }
