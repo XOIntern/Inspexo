@@ -247,7 +247,7 @@ export function UserTable({ data: initialData }: { data: UserRow[] }) {
             </SelectContent>
           </Select>
         </div>
-        <UserDialog triggerLabel="Add user" triggerVariant="outline" />
+        <UserDialog triggerLabel="Add user" triggerVariant="default" />
       </div>
       <div className="relative flex flex-col gap-4 overflow-auto">
         <div className="overflow-hidden rounded-lg border">
