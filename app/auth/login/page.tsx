@@ -29,6 +29,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    console.log("Login submitted:", { email, password });
+    // Handle form submission logic here
+  };
+
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
       <div className="relative min-h-screen">
@@ -58,17 +65,6 @@ export default function LoginPage() {
                     sizes="44px"
                     priority
                     className="object-contain"
-                  />
-                </div>
-
-                <div className="relative h-9 w-[126px]">
-                  <Image
-                    src="/InspeXO.webp"
-                    alt="InspeXO"
-                    fill
-                    sizes="126px"
-                    priority
-                    className="object-contain object-left"
                   />
                 </div>
               </Link>
@@ -171,7 +167,9 @@ export default function LoginPage() {
                 </div>
 
                 {/* Content */}
-                <div className="p-6 pt-2 sm:p-8 sm:pt-3">
+                <form 
+                  onSubmit={handleSubmit} className="p-6 pt-2 sm:p-8 sm:pt-3">
+              
                   {/* Email */}
                   <Field className="w-full">
                     <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -185,6 +183,7 @@ export default function LoginPage() {
                         id="email"
                         name="email"
                         type="email"
+                        required
                         placeholder="Your Email In Here"
                         autoComplete="off"
                         value={email}
@@ -211,6 +210,7 @@ export default function LoginPage() {
                         id="password"
                         name="password"
                         type={showPassword ? "text" : "password"}
+                        required
                         placeholder="Your Password In Here"
                         autoComplete="current-password"
                         value={password}
@@ -252,7 +252,7 @@ export default function LoginPage() {
 
                   {/* Sign In */}
                   <Button
-                    type="button"
+                    type="submit"
                     className="mt-6 h-12 w-full rounded-full text-sm font-semibold"
                   >
                     SIGN IN -&gt;
@@ -300,7 +300,7 @@ export default function LoginPage() {
                     permissions are evaluated according to the assigned
                     user-site-role mapping.
                   </p>
-                </div>
+                </form>
               </div>
 
               {/* Footer */}
