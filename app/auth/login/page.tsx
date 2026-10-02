@@ -184,7 +184,7 @@ export default function LoginPage() {
                         name="email"
                         type="email"
                         required
-                        placeholder="Your Email In Here"
+                        placeholder="Enter your email"
                         autoComplete="email"
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
@@ -256,6 +256,7 @@ export default function LoginPage() {
                     className="mt-6 h-12 w-full rounded-full text-sm font-semibold"
                   >
                     SIGN IN -&gt;
+                    <ArrowRight className="ml-2 size-4" />
                   </Button>
 
                   {/* Divider */}
