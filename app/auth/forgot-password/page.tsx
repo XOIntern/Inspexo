@@ -57,17 +57,6 @@ export default function ForgotPasswordPage() {
                     className="object-contain"
                   />
                 </div>
-
-                <div className="relative h-9 w-[126px]">
-                  <Image
-                    src="/InspeXO.webp"
-                    alt="InspeXO"
-                    fill
-                    sizes="126px"
-                    priority
-                    className="object-contain object-left"
-                  />
-                </div>
               </Link>
 
               {/* Hero text */}
@@ -148,17 +137,6 @@ export default function ForgotPasswordPage() {
                       sizes="40px"
                       priority
                       className="object-contain"
-                    />
-                  </div>
-
-                  <div className="relative h-8 w-[112px]">
-                    <Image
-                      src="/InspeXO.webp"
-                      alt="InspeXO"
-                      fill
-                      sizes="112px"
-                      priority
-                      className="object-contain object-left"
                     />
                   </div>
                 </Link>
