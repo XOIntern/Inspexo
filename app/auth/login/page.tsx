@@ -185,7 +185,7 @@ export default function LoginPage() {
                         type="email"
                         required
                         placeholder="Your Email In Here"
-                        autoComplete="off"
+                        autoComplete="email"
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
                         className="min-w-0 flex-1 truncate
