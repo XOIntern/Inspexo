@@ -33,4 +33,4 @@ InspeXO: HSE management system (audits, inspections, findings, corrective action
 
 ### App flow
 
-`/` renders Header + Hero + ScrollGlobe, then a splash screen (~1600ms) and login-page skeleton (~900ms) before `router.push("/login")` — all timer-driven, covered by `tests/home.integration.test.tsx` with fake timers. `/login` renders `components/login-page.tsx`; the Microsoft CTA is disabled because Entra ID auth is not configured yet (`onMicrosoftLogin` is the stub to fill).
+`/` renders Header + Hero + ScrollGlobe, then a splash screen (~1600ms) and login-page skeleton (~900ms) before `router.push("/login")` — all timer-driven, covered by `tests/home.integration.test.tsx` with fake timers. `/login` renders `components/login-page.tsx`; authentication is not wired up yet.
