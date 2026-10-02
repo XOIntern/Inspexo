@@ -127,6 +127,7 @@ export function Header() {
 
       navigationTimer.current = setTimeout(() => {
         navigationTimer.current = null;
+        setShowSplash(false);
         router.push("/auth/login");
       }, 900);
   };
